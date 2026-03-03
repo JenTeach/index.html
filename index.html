@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,9 +10,10 @@
 <style>
 body {
     margin: 0;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     background: #f2f2f2;
 }
+
 .container {
     display: flex;
     height: 100vh;
@@ -50,6 +52,16 @@ body {
     user-select: none;
 }
 
+.vowel {
+    color: #d32f2f;
+    font-weight: 600;
+}
+
+.silent-e {
+    background-color: #bdbdbd;
+    color: black;
+}
+
 /* CENTER PANEL */
 .center-panel {
     width: 40%;
@@ -61,7 +73,6 @@ body {
     flex-direction: column;
     justify-content: center;   /* 👈 centers vertically */
 }
-
 h2 {
     text-align: center;
 }
@@ -227,12 +238,25 @@ button {
 /* CREATE TILES */
 function createTiles(list, containerId) {
     const container = document.getElementById(containerId);
+
     list.forEach(text => {
         const tile = document.createElement("div");
         tile.className = "tile";
-        tile.textContent = text;
         tile.draggable = true;
         tile.addEventListener("dragstart", dragStart);
+
+        if (text === "e_silent") {
+            tile.textContent = "e";
+            tile.classList.add("vowel", "silent-e");
+        } 
+        else {
+            tile.textContent = text;
+
+            if (containerId === "letters" && ["a","e","i","o","u"].includes(text)) {
+                tile.classList.add("vowel");
+            }
+        }
+
         container.appendChild(tile);
     });
 }
@@ -243,18 +267,21 @@ function dragStart(e) {
 
 /* MAP BOXES ACCEPT TILES ONLY */
 document.querySelectorAll(".map-box").forEach(box => {
+
     box.addEventListener("dragover", e => e.preventDefault());
+
     box.addEventListener("drop", function(e) {
         e.preventDefault();
-        if (this.children.length > 0) return; // one tile only
 
         const text = e.dataTransfer.getData("text");
 
+        // Clear existing tile in box (for word chaining)
+        this.innerHTML = "";
+
+        // Create a NEW tile (clone behavior)
         const tile = document.createElement("div");
         tile.className = "tile";
         tile.textContent = text;
-        tile.draggable = true;
-        tile.addEventListener("dragstart", dragStart);
 
         this.appendChild(tile);
     });
@@ -283,7 +310,7 @@ function goFullScreen() {
 /* TILE CONTENT */
 createTiles(
 ["a","b","c","d","e","f","g","h","i","j","k","l",
- "m","n","o","p","q","r","s","t","u","v","w","x","y","z"],
+ "m","n","o","p","q","r","s","t","u","v","w","x","y","z","e_silent"],
 "letters");
 
 createTiles(["sh","th","ch","ph","wh","ck"],"digraphs");
