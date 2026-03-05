@@ -32,7 +32,8 @@ body {
     overflow-y: auto;
 }
 .chip-bank {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(6, 65px);
     justify-content: center;
     gap: 12px;
     margin-bottom: 15px;
@@ -145,12 +146,12 @@ h2 {
 
 /* TAP IT */
 .circle-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(6, 65px);
     justify-content: center;
     gap: 12px;
     margin-bottom: 30px;
 }
-
 .circle {
     width: 65px;
     height: 65px;
@@ -372,15 +373,17 @@ document.querySelectorAll(".circle").forEach(circle => {
 
 /* RESET */
 function resetBoard() {
-    document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
-    document.querySelectorAll(".circle").forEach(circle => circle.classList.remove("active"));
-}
 
-/* FULL SCREEN */
-function goFullScreen() {
-    if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen();
-    }
+    // Clear map boxes
+    document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
+
+    // Move chips back to bank
+    const chipBank = document.querySelector(".chip-bank");
+
+    document.querySelectorAll(".sound-chip").forEach(chip => {
+        chipBank.appendChild(chip);
+    });
+
 }
 
 /* TILE CONTENT */
@@ -504,10 +507,6 @@ h2 {
     border-radius: 50%;
     background: white;
     cursor: pointer;
-}
-
-.circle.active {
-    background: #e53935;
 }
 
 /* MAP IT */
