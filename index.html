@@ -31,7 +31,20 @@ body {
     box-sizing: border-box;
     overflow-y: auto;
 }
+.chip-bank {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 15px;
+}
 
+.sound-chip {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: #e53935;
+    cursor: grab;
+}
 .section > div {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -190,7 +203,17 @@ button {
     <div class="center-panel">
 
         <h2>Tap It!</h2>
-        <div class="circle-container">
+
+<div class="chip-bank">
+    <div class="sound-chip"></div>
+    <div class="sound-chip"></div>
+    <div class="sound-chip"></div>
+    <div class="sound-chip"></div>
+    <div class="sound-chip"></div>
+    <div class="sound-chip"></div>
+</div>
+
+<div class="circle-container">
             <div class="circle"></div>
             <div class="circle"></div>
             <div class="circle"></div>
@@ -332,6 +355,43 @@ createTiles(
 createTiles(["dge","ng","nk","tch","qu","kn","wr","mb","gh","gn"],
 "otherRight");
 
+    /* SOUND CHIP DRAGGING */
+
+document.querySelectorAll(".sound-chip").forEach(chip => {
+    chip.draggable = true;
+
+    chip.addEventListener("dragstart", function(e) {
+        e.dataTransfer.setData("chip", "true");
+        e.dataTransfer.setData("chipId", this.id);
+    });
+});
+
+// Give chips unique IDs
+document.querySelectorAll(".sound-chip").forEach((chip, index) => {
+    chip.id = "chip-" + index;
+});
+
+document.querySelectorAll(".circle").forEach(circle => {
+
+    circle.addEventListener("dragover", e => e.preventDefault());
+
+    circle.addEventListener("drop", function(e) {
+        e.preventDefault();
+
+        if (!e.dataTransfer.getData("chip")) return;
+
+        const chipId = e.dataTransfer.getData("chipId");
+        const draggedChip = document.getElementById(chipId);
+
+        // If circle already has a chip, send it back to bank
+        if (this.firstChild) {
+            document.querySelector(".chip-bank").appendChild(this.firstChild);
+        }
+
+        this.appendChild(draggedChip);
+    });
+});
+    
 </script>
 
 </body>
