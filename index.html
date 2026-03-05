@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -31,69 +30,14 @@ body {
     box-sizing: border-box;
     overflow-y: auto;
 }
-.chip-bank {
-    display: grid;
-    grid-template-columns: repeat(6, 65px);
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 15px;
-}
 
-.sound-chip {
-    width: 65px;
-    height: 65px;
-    border-radius: 50%;
-    background: #e53935;
-    cursor: grab;
-}
-
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Phonics Board</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-<style>
-body {
-    margin: 0;
-    font-family: "Poppins", sans-serif;
-    background: #f2f2f2;
-}
-
-.container {
-    display: flex;
-    height: 100vh;
-}
-
-/* LEFT PANEL */
-.left-panel {
-    width: 30%;
-    display: flex;
-    flex-direction: column;
-}
-
-.section {
-    padding: 10px;
-    box-sizing: border-box;
-    overflow-y: auto;
-}
-.chip-bank {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 15px;
-}
-
-.sound-chip {
-    width: 65px;
-    height: 65px;
-    border-radius: 50%;
-    background: #e53935;
-    cursor: grab;
-}
-.section > div {
+/* Tile grids (6 across) */
+#letters,
+#digraphs,
+#otherLeft,
+#rControlled,
+#vowelTeams,
+#otherRight {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 6px;
@@ -111,12 +55,10 @@ body {
     background: white;
     color: black;
     padding: 14px 18px;
-    margin: 5px;
-    display: inline-block;
     border-radius: 10px;
     font-size: 22px;
     cursor: grab;
-    user-select: none;
+    text-align: center;
 }
 
 .vowel {
@@ -135,16 +77,33 @@ body {
     background: white;
     padding: 20px;
     box-sizing: border-box;
-
     display: flex;
     flex-direction: column;
-    justify-content: center;   /* 👈 centers vertically */
+    justify-content: center;
 }
+
 h2 {
     text-align: center;
 }
 
-/* TAP IT */
+/* SOUND CHIP BANK */
+.chip-bank {
+    display: grid;
+    grid-template-columns: repeat(6, 65px);
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.sound-chip {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: #e53935;
+    cursor: grab;
+}
+
+/* TAP CIRCLES */
 .circle-container {
     display: grid;
     grid-template-columns: repeat(6, 65px);
@@ -152,17 +111,13 @@ h2 {
     gap: 12px;
     margin-bottom: 30px;
 }
+
 .circle {
     width: 65px;
     height: 65px;
     border: 3px solid #999;
     border-radius: 50%;
     background: white;
-    cursor: pointer;
-}
-
-.circle.active {
-    background: #e53935;
 }
 
 /* MAP IT */
@@ -219,6 +174,7 @@ button {
     margin: 5px;
     cursor: pointer;
 }
+
 .button-row {
     text-align: center;
 }
@@ -229,84 +185,80 @@ button {
 
 <div class="container">
 
-    <!-- LEFT PANEL -->
-    <div class="left-panel">
-        <div class="section blue">
-            <h3>Consonants & Vowels</h3>
-            <div id="letters"></div>
-        </div>
-
-        <div class="section green">
-            <h3>Common Consonant Digraphs</h3>
-            <div id="digraphs"></div>
-        </div>
-
-        <div class="section purple">
-            <h3>Other</h3>
-            <div id="otherLeft"></div>
-        </div>
+<div class="left-panel">
+    <div class="section blue">
+        <h3>Consonants & Vowels</h3>
+        <div id="letters"></div>
     </div>
 
-    <!-- CENTER PANEL -->
-    <div class="center-panel">
+    <div class="section green">
+        <h3>Common Consonant Digraphs</h3>
+        <div id="digraphs"></div>
+    </div>
 
-        <h2>Tap It!</h2>
-
-<div class="chip-bank">
-    <div class="sound-chip"></div>
-    <div class="sound-chip"></div>
-    <div class="sound-chip"></div>
-    <div class="sound-chip"></div>
-    <div class="sound-chip"></div>
-    <div class="sound-chip"></div>
+    <div class="section purple">
+        <h3>Other</h3>
+        <div id="otherLeft"></div>
+    </div>
 </div>
 
-<div class="circle-container">
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-        </div>
+<div class="center-panel">
 
-        <h2>Map It!</h2>
-        <div class="map-boxes">
-            <div class="map-box"></div>
-            <div class="map-box"></div>
-            <div class="map-box"></div>
-            <div class="map-box"></div>
-            <div class="map-box"></div>
-            <div class="map-box"></div>
-        </div>
+    <h2>Tap It!</h2>
 
-        <h2>Write It!</h2>
-        <div class="write-area"></div>
-
-        <div class="button-row">
-            <button onclick="resetBoard()">Reset</button>
-            <button onclick="goFullScreen()">Full Screen</button>
-        </div>
-
+    <div class="chip-bank">
+        <div class="sound-chip"></div>
+        <div class="sound-chip"></div>
+        <div class="sound-chip"></div>
+        <div class="sound-chip"></div>
+        <div class="sound-chip"></div>
+        <div class="sound-chip"></div>
     </div>
 
-    <!-- RIGHT PANEL -->
-    <div class="right-panel">
-        <div class="section orange">
-            <h3>r-Controlled Vowels</h3>
-            <div id="rControlled"></div>
-        </div>
-
-        <div class="section pink">
-            <h3>Vowel Teams</h3>
-            <div id="vowelTeams"></div>
-        </div>
-
-        <div class="section darkpurple">
-            <h3>Other</h3>
-            <div id="otherRight"></div>
-        </div>
+    <div class="circle-container">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
     </div>
+
+    <h2>Map It!</h2>
+    <div class="map-boxes">
+        <div class="map-box"></div>
+        <div class="map-box"></div>
+        <div class="map-box"></div>
+        <div class="map-box"></div>
+        <div class="map-box"></div>
+        <div class="map-box"></div>
+    </div>
+
+    <h2>Write It!</h2>
+    <div class="write-area"></div>
+
+    <div class="button-row">
+        <button onclick="resetBoard()">Reset</button>
+    </div>
+
+</div>
+
+<div class="right-panel">
+    <div class="section orange">
+        <h3>r-Controlled Vowels</h3>
+        <div id="rControlled"></div>
+    </div>
+
+    <div class="section pink">
+        <h3>Vowel Teams</h3>
+        <div id="vowelTeams"></div>
+    </div>
+
+    <div class="section darkpurple">
+        <h3>Other</h3>
+        <div id="otherRight"></div>
+    </div>
+</div>
 
 </div>
 
@@ -315,6 +267,7 @@ button {
 /* CREATE TILES */
 function createTiles(list, containerId) {
     const container = document.getElementById(containerId);
+    container.innerHTML = "";
 
     list.forEach(text => {
         const tile = document.createElement("div");
@@ -325,10 +278,8 @@ function createTiles(list, containerId) {
         if (text === "e_silent") {
             tile.textContent = "e";
             tile.classList.add("vowel", "silent-e");
-        } 
-        else {
+        } else {
             tile.textContent = text;
-
             if (containerId === "letters" && ["a","e","i","o","u"].includes(text)) {
                 tile.classList.add("vowel");
             }
@@ -342,48 +293,49 @@ function dragStart(e) {
     e.dataTransfer.setData("text", e.target.textContent);
 }
 
-/* MAP BOXES ACCEPT TILES ONLY */
+/* MAP DROP */
 document.querySelectorAll(".map-box").forEach(box => {
-
     box.addEventListener("dragover", e => e.preventDefault());
-
     box.addEventListener("drop", function(e) {
         e.preventDefault();
-
         const text = e.dataTransfer.getData("text");
-
-        // Clear existing tile in box (for word chaining)
         this.innerHTML = "";
-
-        // Create a NEW tile (clone behavior)
         const tile = document.createElement("div");
         tile.className = "tile";
         tile.textContent = text;
-
         this.appendChild(tile);
     });
 });
 
-/* TAP CIRCLES */
+/* SOUND CHIP DRAGGING */
+document.querySelectorAll(".sound-chip").forEach((chip, index) => {
+    chip.id = "chip-" + index;
+    chip.draggable = true;
+    chip.addEventListener("dragstart", function(e) {
+        e.dataTransfer.setData("chipId", this.id);
+    });
+});
+
 document.querySelectorAll(".circle").forEach(circle => {
-    circle.addEventListener("click", function() {
-        this.classList.toggle("active");
+    circle.addEventListener("dragover", e => e.preventDefault());
+    circle.addEventListener("drop", function(e) {
+        e.preventDefault();
+        const chipId = e.dataTransfer.getData("chipId");
+        const draggedChip = document.getElementById(chipId);
+        if (this.firstChild) {
+            document.querySelector(".chip-bank").appendChild(this.firstChild);
+        }
+        this.appendChild(draggedChip);
     });
 });
 
 /* RESET */
 function resetBoard() {
-
-    // Clear map boxes
     document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
-
-    // Move chips back to bank
     const chipBank = document.querySelector(".chip-bank");
-
     document.querySelectorAll(".sound-chip").forEach(chip => {
         chipBank.appendChild(chip);
     });
-
 }
 
 /* TILE CONTENT */
@@ -394,389 +346,14 @@ createTiles(
 
 createTiles(["sh","th","ch","ph","wh","ck"],"digraphs");
 createTiles(["ff","ll","ss","zz","ed","ing"],"otherLeft");
-
 createTiles(["ar","er","ir","or","ur"],"rControlled");
-
 createTiles(
 ["ai","ay","ee","ea","oa","ow","ie","igh","ue","ui","ew","oe",
  "aw","au","ou","oo","oi","oy","eigh","ey","ei"],
 "vowelTeams");
-
 createTiles(["dge","ng","nk","tch","qu","kn","wr","mb","gh","gn"],
 "otherRight");
 
-    /* SOUND CHIP DRAGGING */
-
-document.querySelectorAll(".sound-chip").forEach(chip => {
-    chip.draggable = true;
-
-    chip.addEventListener("dragstart", function(e) {
-        e.dataTransfer.setData("chip", "true");
-        e.dataTransfer.setData("chipId", this.id);
-    });
-});
-
-// Give chips unique IDs
-document.querySelectorAll(".sound-chip").forEach((chip, index) => {
-    chip.id = "chip-" + index;
-});
-
-document.querySelectorAll(".circle").forEach(circle => {
-
-    circle.addEventListener("dragover", e => e.preventDefault());
-
-    circle.addEventListener("drop", function(e) {
-        e.preventDefault();
-
-        if (!e.dataTransfer.getData("chip")) return;
-
-        const chipId = e.dataTransfer.getData("chipId");
-        const draggedChip = document.getElementById(chipId);
-
-        // If circle already has a chip, send it back to bank
-        if (this.firstChild) {
-            document.querySelector(".chip-bank").appendChild(this.firstChild);
-        }
-
-        this.appendChild(draggedChip);
-    });
-});
-    
-</script>
-
-</body>
-</html>
-
-.blue { background: #2f5aa8; color: white; flex: 2; }
-.green { background: #4caf50; color: white; flex: 1; }
-.purple { background: #6a4fa3; color: white; flex: 1; }
-
-.section h3 {
-    margin-top: 0;
-}
-
-.tile {
-    background: white;
-    color: black;
-    padding: 14px 18px;
-    margin: 5px;
-    display: inline-block;
-    border-radius: 10px;
-    font-size: 22px;
-    cursor: grab;
-    user-select: none;
-}
-
-.vowel {
-    color: #d32f2f;
-    font-weight: 600;
-}
-
-.silent-e {
-    background-color: #bdbdbd;
-    color: black;
-}
-
-/* CENTER PANEL */
-.center-panel {
-    width: 40%;
-    background: white;
-    padding: 20px;
-    box-sizing: border-box;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;   /* 👈 centers vertically */
-}
-h2 {
-    text-align: center;
-}
-
-/* TAP IT */
-.circle-container {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 30px;
-}
-
-.circle {
-    width: 65px;
-    height: 65px;
-    border: 3px solid #999;
-    border-radius: 50%;
-    background: white;
-    cursor: pointer;
-}
-
-/* MAP IT */
-.map-boxes {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 30px;
-}
-
-.map-box {
-    width: 70px;
-    height: 70px;
-    border: 3px solid #999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
-}
-
-/* WRITE IT */
-.write-area {
-    height: 120px;
-    width: 85%;
-    margin: 20px auto;
-    background: repeating-linear-gradient(
-        to bottom,
-        white,
-        white 28px,
-        #ccc 29px,
-        white 30px
-    );
-    border: 3px solid #999;
-}
-
-/* RIGHT PANEL */
-.right-panel {
-    width: 30%;
-    display: flex;
-    flex-direction: column;
-}
-
-.orange { background: #f39c12; color: white; flex: 1; }
-.pink { background: #e91e63; color: white; flex: 2; }
-.darkpurple { background: #5e3c99; color: white; flex: 1; }
-
-button {
-    padding: 10px 20px;
-    font-size: 18px;
-    border-radius: 8px;
-    border: none;
-    background: #2f5aa8;
-    color: white;
-    margin: 5px;
-    cursor: pointer;
-}
-.button-row {
-    text-align: center;
-}
-</style>
-</head>
-
-<body>
-
-<div class="container">
-
-    <!-- LEFT PANEL -->
-    <div class="left-panel">
-        <div class="section blue">
-            <h3>Consonants & Vowels</h3>
-            <div id="letters"></div>
-        </div>
-
-        <div class="section green">
-            <h3>Common Consonant Digraphs</h3>
-            <div id="digraphs"></div>
-        </div>
-
-        <div class="section purple">
-            <h3>Other</h3>
-            <div id="otherLeft"></div>
-        </div>
-    </div>
-
-    <!-- CENTER PANEL -->
-    <div class="center-panel">
-
-        <h2>Tap It!</h2>
-
-<div class="chip-bank">
-    <div class="sound-chip"></div>
-    <div class="sound-chip"></div>
-    <div class="sound-chip"></div>
-    <div class="sound-chip"></div>
-    <div class="sound-chip"></div>
-    <div class="sound-chip"></div>
-</div>
-
-<div class="circle-container">
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-        </div>
-
-        <h2>Map It!</h2>
-        <div class="map-boxes">
-            <div class="map-box"></div>
-            <div class="map-box"></div>
-            <div class="map-box"></div>
-            <div class="map-box"></div>
-            <div class="map-box"></div>
-            <div class="map-box"></div>
-        </div>
-
-        <h2>Write It!</h2>
-        <div class="write-area"></div>
-
-        <div class="button-row">
-            <button onclick="resetBoard()">Reset</button>
-            <button onclick="goFullScreen()">Full Screen</button>
-        </div>
-
-    </div>
-
-    <!-- RIGHT PANEL -->
-    <div class="right-panel">
-        <div class="section orange">
-            <h3>r-Controlled Vowels</h3>
-            <div id="rControlled"></div>
-        </div>
-
-        <div class="section pink">
-            <h3>Vowel Teams</h3>
-            <div id="vowelTeams"></div>
-        </div>
-
-        <div class="section darkpurple">
-            <h3>Other</h3>
-            <div id="otherRight"></div>
-        </div>
-    </div>
-
-</div>
-
-<script>
-
-/* CREATE TILES */
-function createTiles(list, containerId) {
-    const container = document.getElementById(containerId);
-
-    list.forEach(text => {
-        const tile = document.createElement("div");
-        tile.className = "tile";
-        tile.draggable = true;
-        tile.addEventListener("dragstart", dragStart);
-
-        if (text === "e_silent") {
-            tile.textContent = "e";
-            tile.classList.add("vowel", "silent-e");
-        } 
-        else {
-            tile.textContent = text;
-
-            if (containerId === "letters" && ["a","e","i","o","u"].includes(text)) {
-                tile.classList.add("vowel");
-            }
-        }
-
-        container.appendChild(tile);
-    });
-}
-
-function dragStart(e) {
-    e.dataTransfer.setData("text", e.target.textContent);
-}
-
-/* MAP BOXES ACCEPT TILES ONLY */
-document.querySelectorAll(".map-box").forEach(box => {
-
-    box.addEventListener("dragover", e => e.preventDefault());
-
-    box.addEventListener("drop", function(e) {
-        e.preventDefault();
-
-        const text = e.dataTransfer.getData("text");
-
-        // Clear existing tile in box (for word chaining)
-        this.innerHTML = "";
-
-        // Create a NEW tile (clone behavior)
-        const tile = document.createElement("div");
-        tile.className = "tile";
-        tile.textContent = text;
-
-        this.appendChild(tile);
-    });
-});
-
-/* RESET */
-function resetBoard() {
-    document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
-    document.querySelectorAll(".circle").forEach(circle => circle.classList.remove("active"));
-}
-
-/* FULL SCREEN */
-function goFullScreen() {
-    if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen();
-    }
-}
-
-/* TILE CONTENT */
-createTiles(
-["a","b","c","d","e","f","g","h","i","j","k","l",
- "m","n","o","p","q","r","s","t","u","v","w","x","y","z","e_silent"],
-"letters");
-
-createTiles(["sh","th","ch","ph","wh","ck"],"digraphs");
-createTiles(["ff","ll","ss","zz","ed","ing"],"otherLeft");
-
-createTiles(["ar","er","ir","or","ur"],"rControlled");
-
-createTiles(
-["ai","ay","ee","ea","oa","ow","ie","igh","ue","ui","ew","oe",
- "aw","au","ou","oo","oi","oy","eigh","ey","ei"],
-"vowelTeams");
-
-createTiles(["dge","ng","nk","tch","qu","kn","wr","mb","gh","gn"],
-"otherRight");
-
-    /* SOUND CHIP DRAGGING */
-
-document.querySelectorAll(".sound-chip").forEach(chip => {
-    chip.draggable = true;
-
-    chip.addEventListener("dragstart", function(e) {
-        e.dataTransfer.setData("chip", "true");
-        e.dataTransfer.setData("chipId", this.id);
-    });
-});
-
-// Give chips unique IDs
-document.querySelectorAll(".sound-chip").forEach((chip, index) => {
-    chip.id = "chip-" + index;
-});
-
-document.querySelectorAll(".circle").forEach(circle => {
-
-    circle.addEventListener("dragover", e => e.preventDefault());
-
-    circle.addEventListener("drop", function(e) {
-        e.preventDefault();
-
-        if (!e.dataTransfer.getData("chip")) return;
-
-        const chipId = e.dataTransfer.getData("chipId");
-        const draggedChip = document.getElementById(chipId);
-
-        // If circle already has a chip, send it back to bank
-        if (this.firstChild) {
-            document.querySelector(".chip-bank").appendChild(this.firstChild);
-        }
-
-        this.appendChild(draggedChip);
-    });
-});
-    
 </script>
 
 </body>
