@@ -107,6 +107,14 @@ h2 {
     cursor: grab;
 }
 
+    .chip-slot {
+    width: 65px;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+    
 /* TAP CIRCLES */
 .circle-container {
     display: grid;
@@ -211,13 +219,13 @@ button {
     <h2>Tap It!</h2>
 
     <div class="chip-bank">
-        <div class="sound-chip"></div>
-        <div class="sound-chip"></div>
-        <div class="sound-chip"></div>
-        <div class="sound-chip"></div>
-        <div class="sound-chip"></div>
-        <div class="sound-chip"></div>
-    </div>
+    <div class="chip-slot"><div class="sound-chip"></div></div>
+    <div class="chip-slot"><div class="sound-chip"></div></div>
+    <div class="chip-slot"><div class="sound-chip"></div></div>
+    <div class="chip-slot"><div class="sound-chip"></div></div>
+    <div class="chip-slot"><div class="sound-chip"></div></div>
+    <div class="chip-slot"><div class="sound-chip"></div></div>
+</div>
 
     <div class="circle-container">
         <div class="circle"></div>
@@ -313,40 +321,63 @@ document.querySelectorAll(".map-box").forEach(box => {
 
 /* SOUND CHIP DRAGGING */
 
-document.querySelectorAll(".sound-chip").forEach((chip, index) => {
+document.querySelectorAll(".sound-chip").forEach(chip => {
     chip.draggable = true;
 
     chip.addEventListener("dragstart", function(e) {
-        e.dataTransfer.setData("chip", "true");
+        e.dataTransfer.setData("chipId", this.id);
     });
 });
 
-document.querySelectorAll(".circle").forEach(circle => {
-
-    circle.addEventListener("dragover", e => e.preventDefault());
-
-    circle.addEventListener("drop", function(e) {
-        e.preventDefault();
-
-        if (!e.dataTransfer.getData("chip")) return;
-
-        // Clear existing chip in this circle
-        this.innerHTML = "";
-
-        // Create a new chip (clone behavior)
-        const newChip = document.createElement("div");
-        newChip.className = "sound-chip";
-
-        this.appendChild(newChip);
-    });
+// Assign IDs
+document.querySelectorAll(".sound-chip").forEach((chip, index) => {
+    chip.id = "chip-" + index;
 });
+
+// Allow dropping into circles OR chip slots
+function setupDropZones(selector) {
+    document.querySelectorAll(selector).forEach(zone => {
+        zone.addEventListener("dragover", e => e.preventDefault());
+
+        zone.addEventListener("drop", function(e) {
+            e.preventDefault();
+
+            const chipId = e.dataTransfer.getData("chipId");
+            if (!chipId) return;
+
+            const draggedChip = document.getElementById(chipId);
+
+            // If this zone already has a chip, send it back to its slot
+            if (this.querySelector(".sound-chip")) {
+                const existingChip = this.querySelector(".sound-chip");
+                const originalSlot = document.getElementById(existingChip.dataset.home);
+                originalSlot.appendChild(existingChip);
+            }
+
+            this.appendChild(draggedChip);
+        });
+    });
+}
+
+// Remember each chip’s home slot
+document.querySelectorAll(".chip-slot").forEach((slot, index) => {
+    const chip = slot.querySelector(".sound-chip");
+    chip.dataset.home = slot.id = "slot-" + index;
+});
+
+// Enable drops
+setupDropZones(".circle");
+setupDropZones(".chip-slot");
 
 /* RESET */
 function resetBoard() {
     document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
-    document.querySelectorAll(".circle").forEach(circle => circle.innerHTML = "");
-}
 
+    document.querySelectorAll(".sound-chip").forEach(chip => {
+        const home = document.getElementById(chip.dataset.home);
+        home.appendChild(chip);
+    });
+}
 /* TILE CONTENT */
 createTiles(
 ["a","b","c","d","e","f","g","h","i","j","k","l",
