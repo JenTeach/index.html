@@ -15,7 +15,8 @@ body {
 
 .container {
     display: flex;
-    height: 100vh;
+    align-items: flex-end;   /* 👈 aligns panels to bottom */
+    min-height: 100vh;       /* keeps page full height */
 }
 
 /* LEFT PANEL */
@@ -23,6 +24,7 @@ body {
     width: 30%;
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;   /* pushes sections downward */
 }
 
 .section {
@@ -32,7 +34,6 @@ body {
 
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;  /* 👈 pushes content to bottom */
 }
 
 /* Tile grids (6 across) */
@@ -170,6 +171,7 @@ h2 {
     width: 30%;
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
 }
 
 .orange { background: #f39c12; color: white; flex: 1; }
