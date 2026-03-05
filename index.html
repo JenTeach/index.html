@@ -29,6 +29,10 @@ body {
     padding: 10px;
     box-sizing: border-box;
     overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;  /* 👈 pushes content to bottom */
 }
 
 /* Tile grids (6 across) */
@@ -308,34 +312,39 @@ document.querySelectorAll(".map-box").forEach(box => {
 });
 
 /* SOUND CHIP DRAGGING */
+
 document.querySelectorAll(".sound-chip").forEach((chip, index) => {
-    chip.id = "chip-" + index;
     chip.draggable = true;
+
     chip.addEventListener("dragstart", function(e) {
-        e.dataTransfer.setData("chipId", this.id);
+        e.dataTransfer.setData("chip", "true");
     });
 });
 
 document.querySelectorAll(".circle").forEach(circle => {
+
     circle.addEventListener("dragover", e => e.preventDefault());
+
     circle.addEventListener("drop", function(e) {
         e.preventDefault();
-        const chipId = e.dataTransfer.getData("chipId");
-        const draggedChip = document.getElementById(chipId);
-        if (this.firstChild) {
-            document.querySelector(".chip-bank").appendChild(this.firstChild);
-        }
-        this.appendChild(draggedChip);
+
+        if (!e.dataTransfer.getData("chip")) return;
+
+        // Clear existing chip in this circle
+        this.innerHTML = "";
+
+        // Create a new chip (clone behavior)
+        const newChip = document.createElement("div");
+        newChip.className = "sound-chip";
+
+        this.appendChild(newChip);
     });
 });
 
 /* RESET */
 function resetBoard() {
     document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
-    const chipBank = document.querySelector(".chip-bank");
-    document.querySelectorAll(".sound-chip").forEach(chip => {
-        chipBank.appendChild(chip);
-    });
+    document.querySelectorAll(".circle").forEach(circle => circle.innerHTML = "");
 }
 
 /* TILE CONTENT */
