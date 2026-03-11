@@ -256,6 +256,17 @@ button {
     font-size: 18px;
 }
     
+.right-top-controls {
+    background: white;
+    padding: 10px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.right-top-controls button {
+    font-size: 18px;
+}
+    
 </style>
 </head>
 
@@ -327,6 +338,11 @@ button {
 </div>
 
 <div class="right-panel">
+
+    <div class="right-top-controls">
+    <button onclick="resetBoard()">Reset</button>
+</div>
+    
     <div class="section orange">
         <h3>r-Controlled Vowels</h3>
         <div id="rControlled"></div>
