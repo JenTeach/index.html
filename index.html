@@ -218,6 +218,19 @@ h2 {
     background-color: white;
 }
 
+.writing-tools {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    display: flex;
+    gap: 6px;
+}
+
+.writing-tools button {
+    font-size: 14px;
+    padding: 4px 8px;
+}
+    
 #writingCanvas {
     position: absolute;
     top: 0;
@@ -339,9 +352,14 @@ button {
     </div>
 
     <h2>Write It!</h2>
-    <div class="write-area">
+   <div class="write-area">
     <canvas id="writingCanvas"></canvas>
-    <button class="clear-writing" onclick="clearCanvas()">Clear Writing</button>
+
+    <div class="writing-tools">
+        <button onclick="setPen()">Pen</button>
+        <button onclick="setEraser()">Eraser</button>
+        <button onclick="clearCanvas()">Clear</button>
+    </div>
 </div>
     
 </div>
