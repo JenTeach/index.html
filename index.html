@@ -8,14 +8,35 @@
 
 <style>
 
-    .top-bar {
-    height: 80px;
+ .top-bar {
+    height: 90px;
     background: white;
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: center;
-    position: relative;
     border-bottom: 3px solid #ddd;
+    padding: 0 20px;
+}
+
+.top-left {
+    justify-self: start;
+    font-size: 13px;
+    color: #777;
+    line-height: 1.4;
+}
+
+.top-center {
+    text-align: center;
+}
+
+.top-center h1 {
+    margin: 0;
+    font-size: 42px;
+    color: #2f5aa8;
+}
+
+.top-right {
+    justify-self: end;
 }
 
 .top-bar h1 {
@@ -305,16 +326,19 @@ button {
 <body>
 
 <div class="top-bar">
-    <div class="title-block">
-        <h1>Word Builder</h1>
-        <div class="author-line">
-            Created by Jen Shepherd
-            Based on Benchmark Word Building Routine
-            Farragut Primary | Knox Schools
-            © 2026
-        </div>
+    <div class="top-left">
+        <div>Created by Jen Shepherd</div>
+        <div>Farragut Primary | Knox County Schools</div>
+        <div>Based on Benchmark Word Building Routine</div>
     </div>
-    <button onclick="resetBoard()">Reset</button>
+
+    <div class="top-center">
+        <h1>Word Builder</h1>
+    </div>
+
+    <div class="top-right">
+        <button onclick="resetBoard()">Reset</button>
+    </div>
 </div>
 
 <div class="container">
