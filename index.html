@@ -8,11 +8,6 @@
 
 <style>
 
-    .top-spacer {
-    height: 60px;
-    background: #f9f9f9;
-}
-    
     .top-bar {
     height: 80px;
     background: white;
@@ -62,7 +57,8 @@ body {
 }
     
 .container {
-    height: calc(100vh - 140px);
+    display: flex;
+    height: calc(100vh - 80px); /* subtract top bar height */
 }
 
 /* LEFT PANEL */
@@ -281,8 +277,6 @@ button {
 
 <body>
 
-<div class="top-spacer"></div>
-    
 <div class="top-bar">
     <h1>Word Builder</h1>
     <button onclick="resetBoard()">Reset</button>
