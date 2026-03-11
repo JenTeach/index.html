@@ -184,13 +184,38 @@ h2 {
     width: 85%;
     margin: 20px auto;
     border: 3px solid #999;
-    background: repeating-linear-gradient(
-        to bottom,
-        white,
-        white 28px,
-        #ccc 29px,
-        white 30px
-    );
+
+    background:
+        /* Top solid blue line */
+        repeating-linear-gradient(
+            to bottom,
+            #1976d2 0px,
+            #1976d2 2px,
+            transparent 2px,
+            transparent 30px
+        ),
+
+        /* Middle dashed blue line */
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 14px,
+            #1976d2 14px,
+            #1976d2 16px,
+            transparent 16px,
+            transparent 30px
+        ),
+
+        /* Bottom solid red line */
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 28px,
+            #d32f2f 28px,
+            #d32f2f 30px
+        );
+
+    background-size: 100% 30px;
 }
 
 #writingCanvas {
