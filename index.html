@@ -8,9 +8,26 @@
 
 <style>
 
+    .top-bar {
+    height: 80px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-bottom: 3px solid #ddd;
+}
 
-    .panel-spacer {
-    height: 50px;   /* match right-top-controls height */
+.top-bar h1 {
+    font-size: 44px;
+    margin: 0;
+    color: #2f5aa8;
+}
+
+.top-bar button {
+    position: absolute;
+    right: 30px;
+    font-size: 18px;
 }
     
     .workspace-title {
@@ -24,11 +41,6 @@
     position: relative;
 }
 
-.workspace-controls {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-}
 body {
     margin: 0;
     font-family: "Poppins", sans-serif;
@@ -46,8 +58,7 @@ body {
     
 .container {
     display: flex;
-    align-items: flex-end;   /* 👈 aligns panels to bottom */
-    min-height: 100vh;       /* keeps page full height */
+    height: calc(100vh - 80px); /* subtract top bar height */
 }
 
 /* LEFT PANEL */
@@ -261,22 +272,18 @@ button {
     font-size: 18px;
 }
     
-.right-top-controls {
-    background: white;
-    padding: 10px;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.right-top-controls button {
-    font-size: 18px;
-}
-    
 </style>
 </head>
 
 <body>
 
+<div class="top-bar">
+    <h1>Let’s Build Some Words!</h1>
+    <button onclick="resetBoard()">Reset</button>
+</div>
+
+<div class="container">
+    
 <div class="container">
 
 <div class="left-panel">
@@ -298,9 +305,6 @@ button {
 </div>
 
 <div class="center-panel">
-    <div class="panel-spacer"></div>
-    
-    <h1 class="workspace-title">Let’s Build Some Words!</h1>
     
     <h2>Tap It!</h2>
 
