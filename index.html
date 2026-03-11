@@ -8,10 +8,6 @@
 
 <style>
 
-    .top-spacer {
-    height: 60px;   /* adjust this number */
-}
-    
     .top-bar {
     height: 80px;
     background: white;
@@ -61,7 +57,8 @@ body {
 }
     
 .container {
-    height: calc(100vh - 140px);
+    display: flex;
+    height: calc(100vh - 80px); /* subtract top bar height */
 }
 
 /* LEFT PANEL */
@@ -279,8 +276,6 @@ button {
 </head>
 
 <body>
-
-    <div class="top-spacer"></div>
 
 <div class="top-bar">
     <h1>Word Builder</h1>
