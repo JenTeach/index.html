@@ -180,42 +180,28 @@ h2 {
 /* WRITE IT */
 .write-area {
     position: relative;
-    height: 150px;
+    height: 180px;   /* gives room for wide spacing */
     width: 85%;
     margin: 20px auto;
     border: 3px solid #999;
 
     background:
-        /* Top solid blue line */
+        /* Top solid blue */
+        linear-gradient(#1976d2, #1976d2) 0 40px / 100% 3px no-repeat,
+
+        /* Middle dashed blue */
         repeating-linear-gradient(
-            to bottom,
+            to right,
             #1976d2 0px,
-            #1976d2 2px,
-            transparent 2px,
-            transparent 30px
-        ),
+            #1976d2 10px,
+            transparent 10px,
+            transparent 20px
+        ) 0 90px / 100% 3px no-repeat,
 
-        /* Middle dashed blue line */
-        repeating-linear-gradient(
-            to bottom,
-            transparent 0px,
-            transparent 14px,
-            #1976d2 14px,
-            #1976d2 16px,
-            transparent 16px,
-            transparent 30px
-        ),
+        /* Bottom solid red */
+        linear-gradient(#d32f2f, #d32f2f) 0 140px / 100% 3px no-repeat;
 
-        /* Bottom solid red line */
-        repeating-linear-gradient(
-            to bottom,
-            transparent 0px,
-            transparent 28px,
-            #d32f2f 28px,
-            #d32f2f 30px
-        );
-
-    background-size: 100% 30px;
+    background-color: white;
 }
 
 #writingCanvas {
