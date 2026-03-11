@@ -179,9 +179,11 @@ h2 {
 
 /* WRITE IT */
 .write-area {
-    height: 120px;
+    position: relative;
+    height: 150px;
     width: 85%;
     margin: 20px auto;
+    border: 3px solid #999;
     background: repeating-linear-gradient(
         to bottom,
         white,
@@ -189,7 +191,21 @@ h2 {
         #ccc 29px,
         white 30px
     );
-    border: 3px solid #999;
+}
+
+#writingCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.clear-writing {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 14px;
 }
 
 /* RIGHT PANEL */
@@ -292,8 +308,11 @@ button {
     </div>
 
     <h2>Write It!</h2>
-    <div class="write-area"></div>
-
+    <div class="write-area">
+    <canvas id="writingCanvas"></canvas>
+    <button class="clear-writing" onclick="clearCanvas()">Clear Writing</button>
+</div>
+    
 </div>
 
 <div class="right-panel">
@@ -434,7 +453,60 @@ createTiles(
 "vowelTeams");
 createTiles(["dge","ng","nk","tch","qu","kn","wr","mb","gh","gn"],
 "otherRight");
+/* WRITING TOOL */
 
+const canvas = document.getElementById("writingCanvas");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+}
+
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+let drawing = false;
+
+function startDraw(e) {
+    drawing = true;
+    draw(e);
+}
+
+function endDraw() {
+    drawing = false;
+    ctx.beginPath();
+}
+
+function draw(e) {
+    if (!drawing) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#000";
+
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+}
+
+canvas.addEventListener("mousedown", startDraw);
+canvas.addEventListener("mouseup", endDraw);
+canvas.addEventListener("mousemove", draw);
+
+canvas.addEventListener("touchstart", startDraw);
+canvas.addEventListener("touchend", endDraw);
+canvas.addEventListener("touchmove", draw);
+
+function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+    
 </script>
 
 </body>
