@@ -7,6 +7,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
+
+    .workspace-title {
+    text-align: center;
+    font-size: 36px;
+    margin: 0 0 15px 0;
+    color: #2f5aa8;
+}
+
+.center-panel {
+    position: relative;
+}
+
+.workspace-controls {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
 body {
     margin: 0;
     font-family: "Poppins", sans-serif;
@@ -244,6 +261,12 @@ button {
 
 <div class="center-panel">
 
+    <h1 class="workspace-title">Let’s Build Some Words!</h1>
+
+<div class="workspace-controls">
+    <button onclick="resetBoard()">Reset</button>
+</div>
+    
     <h2>Tap It!</h2>
 
     <div class="chip-bank">
