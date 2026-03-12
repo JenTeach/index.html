@@ -525,12 +525,17 @@ setupDropZones(".chip-slot");
 
 /* RESET */
 function resetBoard() {
+    // Clear map boxes
     document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
 
+    // Return sound chips to home slots
     document.querySelectorAll(".sound-chip").forEach(chip => {
         const home = document.getElementById(chip.dataset.home);
         home.appendChild(chip);
     });
+
+    // Clear writing canvas
+    clearCanvas();
 }
 /* TILE CONTENT */
 createTiles(
