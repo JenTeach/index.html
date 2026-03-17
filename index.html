@@ -8,6 +8,11 @@
 
 <style>
 
+ html, body {
+    touch-action: none;
+    overscroll-behavior: none;
+}
+ 
  .top-bar {
     height: 90px;
     background: white;
@@ -437,6 +442,14 @@ button {
 
 <script>
 
+document.addEventListener("touchmove", function(e) {
+    e.preventDefault();
+}, { passive: false });
+
+ document.addEventListener("dragover", function(e) {
+    e.preventDefault();
+});
+ 
 /* CREATE TILES */
 function createTiles(list, containerId) {
     const container = document.getElementById(containerId);
