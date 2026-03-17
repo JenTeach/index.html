@@ -186,9 +186,9 @@ h2 {
     cursor: grab;
 }
 
-    .chip-slot {
-    width: 65px;
-    height: 65px;
+.chip-slot {
+    width: 100%;
+    aspect-ratio: 1 / 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -203,13 +203,12 @@ h2 {
     margin-bottom: 20px;
 }
 .circle {
-    width: clamp(55px, 6vw, 75px);
-    height: clamp(55px, 6vw, 75px);
+    width: 100%;
+    aspect-ratio: 1 / 1;   /* 👈 keeps it perfectly square */
     border: 3px solid #999;
     border-radius: 50%;
     background: white;
-
-    box-sizing: border-box;  /* 👈 THIS FIXES IT */
+    box-sizing: border-box;
 }
 
 /* MAP IT */
@@ -224,13 +223,14 @@ h2 {
 }
 
 .map-box {
-    width: 65px;
-    height: 65px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
     border: 3px solid #999;
     display: flex;
     align-items: center;
     justify-content: center;
     background: white;
+    box-sizing: border-box;
 }
 
 /* WRITE IT */
@@ -330,12 +330,6 @@ button {
 
 .top-controls button {
     font-size: 18px;
-}
-    .circle,
-.map-box,
-.sound-chip {
-    width: clamp(55px, 6vw, 75px);
-    height: clamp(55px, 6vw, 75px);
 }
  
 </style>
