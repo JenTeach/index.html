@@ -357,36 +357,49 @@ button {
 
 <div class="center-panel">
     
-    <h2>Tap It!</h2>
+<h2>Tap It!</h2>
 
-    <div class="chip-bank">
-    <div class="chip-slot"><div class="sound-chip"></div></div>
-    <div class="chip-slot"><div class="sound-chip"></div></div>
-    <div class="chip-slot"><div class="sound-chip"></div></div>
-    <div class="chip-slot"><div class="sound-chip"></div></div>
-    <div class="chip-slot"><div class="sound-chip"></div></div>
-    <div class="chip-slot"><div class="sound-chip"></div></div>
+<div class="sound-grid">
+    
+    <div class="sound-column">
+        <div class="sound-chip"></div>
+        <div class="circle"></div>
+        <div class="map-box"></div>
+    </div>
+
+    <div class="sound-column">
+        <div class="sound-chip"></div>
+        <div class="circle"></div>
+        <div class="map-box"></div>
+    </div>
+
+    <div class="sound-column">
+        <div class="sound-chip"></div>
+        <div class="circle"></div>
+        <div class="map-box"></div>
+    </div>
+
+    <div class="sound-column">
+        <div class="sound-chip"></div>
+        <div class="circle"></div>
+        <div class="map-box"></div>
+    </div>
+
+    <div class="sound-column">
+        <div class="sound-chip"></div>
+        <div class="circle"></div>
+        <div class="map-box"></div>
+    </div>
+
+    <div class="sound-column">
+        <div class="sound-chip"></div>
+        <div class="circle"></div>
+        <div class="map-box"></div>
+    </div>
+
 </div>
 
-    <div class="circle-container">
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-    </div>
-
-    <h2>Map It!</h2>
-    <div class="map-boxes">
-        <div class="map-box"></div>
-        <div class="map-box"></div>
-        <div class="map-box"></div>
-        <div class="map-box"></div>
-        <div class="map-box"></div>
-        <div class="map-box"></div>
-    </div>
-
+<h2>Write It!</h2>
     <h2>Write It!</h2>
    <div class="write-area">
     <canvas id="writingCanvas"></canvas>
@@ -631,7 +644,49 @@ canvas.addEventListener("touchmove", draw);
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
-    
+.sound-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 70px);
+    justify-content: center;
+    gap: 12px;
+}
+
+.sound-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* shared size */
+.sound-chip,
+.circle,
+.map-box {
+    width: 70px;
+    height: 70px;
+    box-sizing: border-box;
+}
+
+/* styling */
+.sound-chip {
+    background: #e53935;
+    border-radius: 50%;
+}
+
+.circle {
+    border: 3px solid #999;
+    border-radius: 50%;
+    background: white;
+}
+
+.map-box {
+    border: 3px solid #999;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+ 
 </script>
 
 </body>
