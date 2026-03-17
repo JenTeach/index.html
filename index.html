@@ -494,7 +494,11 @@ document.querySelectorAll(".map-box").forEach(box => {
         const clone = draggedTile.cloneNode(true);
         clone.classList.remove("dragging");
 
-        this.appendChild(clone);
+// 👇 make cloned tile draggable too
+clone.setAttribute("draggable", true);
+clone.addEventListener("dragstart", dragStart);
+
+this.appendChild(clone);
     });
 });
 
