@@ -469,32 +469,20 @@ function createTiles(list, containerId) {
 }
 
 function dragStart(e) {
-    e.target.classList.add("dragging");
+    e.dataTransfer.setData("text", e.target.textContent);
 }
-
- document.addEventListener("dragend", function(e) {
-    if (e.target.classList.contains("tile")) {
-        e.target.classList.remove("dragging");
-    }
-});
 
 /* MAP DROP */
 document.querySelectorAll(".map-box").forEach(box => {
     box.addEventListener("dragover", e => e.preventDefault());
-
     box.addEventListener("drop", function(e) {
         e.preventDefault();
-
-        const draggedTile = document.querySelector(".dragging");
-
-        if (!draggedTile) return;
-
+        const text = e.dataTransfer.getData("text");
         this.innerHTML = "";
-
-        const clone = draggedTile.cloneNode(true);
-        clone.classList.remove("dragging");
-
-        this.appendChild(clone);
+        const tile = document.createElement("div");
+        tile.className = "tile";
+        tile.textContent = text;
+        this.appendChild(tile);
     });
 });
 
