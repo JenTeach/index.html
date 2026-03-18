@@ -346,12 +346,18 @@ button {
  .selected {
     outline: 3px solid #ffcc00;
 }
+
+ #app {
+    transform-origin: top center;
+}
  
 </style>
 </head>
 
 <body>
 
+<div id="app">
+  
 <div class="top-bar">
     <div class="top-left">
         <div>Created by Jen Shepherd © 2026</div>
@@ -456,9 +462,27 @@ button {
 
 <script>
 
+body {
+    overflow: hidden;
+}
+ 
 /* WAIT UNTIL PAGE LOADS */
 document.addEventListener("DOMContentLoaded", function() {
 
+ function scaleApp() {
+    const app = document.getElementById("app");
+
+    const screenHeight = window.innerHeight;
+    const appHeight = app.scrollHeight;
+
+    const scale = screenHeight / appHeight;
+
+    app.style.transform = `scale(${scale})`;
+}
+
+window.addEventListener("load", scaleApp);
+window.addEventListener("resize", scaleApp);
+ 
 /* =========================
    TILE CREATION (UNCHANGED)
 ========================= */
@@ -707,6 +731,7 @@ window.clearCanvas = function() {
 }); // END DOM LOAD
 
 </script>
-
+</div>
+ 
 </body>
 </html>
