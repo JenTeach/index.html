@@ -627,13 +627,19 @@ setupDropZones(".chip-slot");
    RESET
 ========================= */
 window.resetBoard = function() {
+
+    /* 1. CLEAR MAP BOXES */
     document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
 
+    /* 2. RETURN SOUND CHIPS TO ORIGINAL SLOTS */
     document.querySelectorAll(".sound-chip").forEach(chip => {
         const home = document.getElementById(chip.dataset.home);
-        home.appendChild(chip);
+        if (home) {
+            home.appendChild(chip);
+        }
     });
 
+    /* 3. CLEAR WRITING CANVAS */
     clearCanvas();
 };
 
