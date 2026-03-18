@@ -356,11 +356,6 @@ button {
     transform-origin: top left;
 }
  
-#app {
-    transform: scale(0.88);
-    transform-origin: top left;
-}
- 
 </style>
 </head>
 
@@ -595,13 +590,13 @@ document.querySelectorAll(".chip-slot").forEach((slot, index) => {
     if (chip) {
         chip.id = "chip-" + index;
         chip.dataset.home = slot.id;
-    }
-});
-    chip.draggable = true;
 
-    chip.addEventListener("dragstart", function(e) {
-        e.dataTransfer.setData("chipId", this.id);
-    });
+        chip.draggable = true;
+
+        chip.addEventListener("dragstart", function(e) {
+            e.dataTransfer.setData("chipId", this.id);
+        });
+    }
 });
 
 function setupDropZones(selector) {
