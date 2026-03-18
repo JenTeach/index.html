@@ -8,6 +8,10 @@
 
 <style>
 
+ body {
+    overflow: hidden;
+}
+
  html, body {
     touch-action: none;
     overscroll-behavior: none;
@@ -339,7 +343,7 @@ button {
 }
 
  .or-pattern {
-    background-color: ##fff4cc;  /* soft orange-yellow */
+    background-color: #fff4cc;  /* soft orange-yellow */
     color: black;
 }
 
@@ -347,8 +351,10 @@ button {
     outline: 3px solid #ffcc00;
 }
 
- #app {
+#app {
+    transform: scale(0.88);
     transform-origin: top center;
+    width: 113%;
 }
  
 </style>
@@ -461,27 +467,9 @@ button {
 </div>
 
 <script>
-
-body {
-    overflow: hidden;
-}
  
 /* WAIT UNTIL PAGE LOADS */
 document.addEventListener("DOMContentLoaded", function() {
-
- function scaleApp() {
-    const app = document.getElementById("app");
-
-    const screenHeight = window.innerHeight;
-    const appHeight = app.scrollHeight;
-
-    const scale = screenHeight / appHeight;
-
-    app.style.transform = `scale(${scale})`;
-}
-
-window.addEventListener("load", scaleApp);
-window.addEventListener("resize", scaleApp);
  
 /* =========================
    TILE CREATION (UNCHANGED)
