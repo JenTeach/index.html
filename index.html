@@ -97,10 +97,14 @@ body {
     
 .container {
     display: flex;
-    height: calc(100dvh - 90px);  /* 👈 NEW unit */
-    align-items: flex-end;
+    height: calc(100% - 90px);
 }
-
+ 
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+ 
 /* LEFT PANEL */
 .left-panel {
     width: 30%;
