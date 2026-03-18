@@ -21,6 +21,7 @@
     align-items: center;
     border-bottom: 3px solid #ddd;
     padding: 0 20px;
+  <button onclick="toggleMode()" id="modeBtn">Board Mode</button>
 }
 
 .top-left {
@@ -447,6 +448,21 @@ button {
 
 <script>
 
+let boardMode = false;
+
+function toggleMode() {
+    boardMode = !boardMode;
+
+    const btn = document.getElementById("modeBtn");
+    btn.textContent = boardMode ? "Desktop Mode" : "Board Mode";
+
+    if (boardMode) {
+        enableBoardMode();
+    } else {
+        enableDesktopMode();
+    }
+}
+ 
 document.addEventListener("touchmove", function(e) {
     e.preventDefault();
 }, { passive: false });
@@ -486,15 +502,73 @@ function createTiles(list, containerId) {
     });
 }
 
-function dragStart(e) {
-    e.target.classList.add("dragging");
+function enableDesktopMode() {
+
+    document.querySelectorAll(".tile").forEach(tile => {
+        tile.setAttribute("draggable", true);
+
+        tile.addEventListener("dragstart", function(e) {
+            e.dataTransfer.setData("text", e.target.textContent);
+        });
+    });
+
+    document.querySelectorAll(".map-box").forEach(box => {
+
+        box.addEventListener("dragover", e => e.preventDefault());
+
+        box.addEventListener("drop", function(e) {
+            e.preventDefault();
+
+            const text = e.dataTransfer.getData("text");
+
+            this.innerHTML = "";
+
+            const tile = document.createElement("div");
+            tile.className = "tile";
+            tile.textContent = text;
+
+            this.appendChild(tile);
+        });
+    });
 }
 
- document.addEventListener("dragend", function(e) {
-    if (e.target.classList.contains("tile")) {
-        e.target.classList.remove("dragging");
-    }
-});
+ function enableBoardMode() {
+
+    // disable drag
+    document.querySelectorAll(".tile").forEach(tile => {
+        tile.setAttribute("draggable", false);
+    });
+
+    let selectedTile = null;
+
+    document.querySelectorAll(".tile").forEach(tile => {
+        tile.onclick = () => {
+            document.querySelectorAll(".tile").forEach(t => t.classList.remove("selected"));
+            selectedTile = tile;
+            tile.classList.add("selected");
+        };
+    });
+
+    document.querySelectorAll(".map-box").forEach(box => {
+        box.onclick = () => {
+            if (!selectedTile) return;
+
+            if (selectedTile.parentElement.classList.contains("map-box")) {
+                selectedTile.parentElement.innerHTML = "";
+            }
+
+            box.innerHTML = "";
+
+            const clone = selectedTile.cloneNode(true);
+
+            clone.onclick = () => {
+                selectedTile = clone;
+            };
+
+            box.appendChild(clone);
+        };
+    });
+}
 
 /* MAP DROP */
 document.querySelectorAll(".map-box").forEach(box => {
@@ -673,7 +747,9 @@ canvas.addEventListener("touchmove", draw);
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
-    
+
+ enableDesktopMode();
+ 
 </script>
 
 </body>
