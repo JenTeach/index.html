@@ -447,14 +447,6 @@ button {
 
 <script>
 
-document.addEventListener("touchmove", function(e) {
-    e.preventDefault();
-}, { passive: false });
-
- document.addEventListener("dragover", function(e) {
-    e.preventDefault();
-});
- 
 /* CREATE TILES */
 function createTiles(list, containerId) {
     const container = document.getElementById(containerId);
@@ -463,69 +455,126 @@ function createTiles(list, containerId) {
     list.forEach(text => {
         const tile = document.createElement("div");
         tile.className = "tile";
-        tile.draggable = true;
-        tile.addEventListener("dragstart", dragStart);
+        tile.textContent = text;
 
         if (text === "e_silent") {
             tile.textContent = "e";
             tile.classList.add("vowel", "silent-e");
-        } else {
+        } 
+        else {
             tile.textContent = text;
-         if (text === " ") {
-             tile.innerHTML = "&nbsp;";
-}
+
             if (containerId === "letters" && ["a","e","i","o","u"].includes(text)) {
                 tile.classList.add("vowel");
             }
-         if (["oar", "ore", "oor"].includes(text)) {
-    tile.classList.add("or-pattern");
-}
         }
 
         container.appendChild(tile);
     });
 }
 
-function dragStart(e) {
-    e.target.classList.add("dragging");
-}
+/* POINTER-BASED DRAG SYSTEM */
 
- document.addEventListener("dragend", function(e) {
-    if (e.target.classList.contains("tile")) {
-        e.target.classList.remove("dragging");
-    }
+let draggedTile = null;
+let offsetX = 0;
+let offsetY = 0;
+let originalParent = null;
+
+/* START DRAG */
+document.addEventListener("pointerdown", (e) => {
+    const tile = e.target.closest(".tile");
+    if (!tile) return;
+
+    draggedTile = tile;
+    originalParent = tile.parentElement;
+
+    const rect = tile.getBoundingClientRect();
+
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+
+    tile.style.position = "absolute";
+    tile.style.zIndex = "1000";
+    tile.style.pointerEvents = "none";
+
+    document.body.appendChild(tile);
 });
 
-/* MAP DROP */
-document.querySelectorAll(".map-box").forEach(box => {
+/* MOVE TILE */
+document.addEventListener("pointermove", (e) => {
+    if (!draggedTile) return;
 
-    box.addEventListener("dragover", e => e.preventDefault());
+    draggedTile.style.left = (e.clientX - offsetX) + "px";
+    draggedTile.style.top = (e.clientY - offsetY) + "px";
+});
 
-    box.addEventListener("drop", function(e) {
-        e.preventDefault();
+/* DROP TILE */
+document.addEventListener("pointerup", (e) => {
+    if (!draggedTile) return;
 
-        const draggedTile = document.querySelector(".dragging");
-        if (!draggedTile) return;
+    const boxes = document.querySelectorAll(".map-box");
+    let dropped = false;
 
-        // clear box
-        this.innerHTML = "";
+    boxes.forEach(box => {
+        const rect = box.getBoundingClientRect();
 
-        // clone tile WITH styles
-        const clone = draggedTile.cloneNode(true);
+        if (
+            e.clientX >= rect.left &&
+            e.clientX <= rect.right &&
+            e.clientY >= rect.top &&
+            e.clientY <= rect.bottom
+        ) {
+            // Clear existing tile
+            box.innerHTML = "";
 
-        clone.classList.remove("dragging");
+            // Clone tile WITH formatting
+            const clone = draggedTile.cloneNode(true);
 
-        // make clone draggable
-        clone.setAttribute("draggable", true);
-        clone.addEventListener("dragstart", dragStart);
+            clone.style.position = "";
+            clone.style.left = "";
+            clone.style.top = "";
+            clone.style.zIndex = "";
+            clone.style.pointerEvents = "";
 
-        this.appendChild(clone);
+            box.appendChild(clone);
+            dropped = true;
+        }
     });
+
+    // Return tile if dropped outside
+    if (!dropped) {
+        draggedTile.style.position = "";
+        draggedTile.style.left = "";
+        draggedTile.style.top = "";
+        draggedTile.style.zIndex = "";
+        draggedTile.style.pointerEvents = "";
+
+        originalParent.appendChild(draggedTile);
+    } else {
+        // If tile came from map box, remove original
+        if (originalParent.classList.contains("map-box")) {
+            originalParent.innerHTML = "";
+        }
+
+        // If from bank, reset original tile back
+        draggedTile.style.position = "";
+        draggedTile.style.left = "";
+        draggedTile.style.top = "";
+        draggedTile.style.zIndex = "";
+        draggedTile.style.pointerEvents = "";
+
+        originalParent.appendChild(draggedTile);
+    }
+
+    draggedTile = null;
+    originalParent = null;
 });
 
-/* SOUND CHIP DRAGGING */
+/* SOUND CHIP DRAGGING (unchanged) */
 
-document.querySelectorAll(".sound-chip").forEach(chip => {
+document.querySelectorAll(".sound-chip").forEach((chip, index) => {
+    chip.id = "chip-" + index;
+    chip.dataset.home = "slot-" + index;
     chip.draggable = true;
 
     chip.addEventListener("dragstart", function(e) {
@@ -533,12 +582,8 @@ document.querySelectorAll(".sound-chip").forEach(chip => {
     });
 });
 
-// Assign IDs
-document.querySelectorAll(".sound-chip").forEach((chip, index) => {
-    chip.id = "chip-" + index;
-});
+/* DROP ZONES FOR SOUND CHIPS */
 
-// Allow dropping into circles OR chip slots
 function setupDropZones(selector) {
     document.querySelectorAll(selector).forEach(zone => {
         zone.addEventListener("dragover", e => e.preventDefault());
@@ -551,7 +596,6 @@ function setupDropZones(selector) {
 
             const draggedChip = document.getElementById(chipId);
 
-            // If this zone already has a chip, send it back to its slot
             if (this.querySelector(".sound-chip")) {
                 const existingChip = this.querySelector(".sound-chip");
                 const originalSlot = document.getElementById(existingChip.dataset.home);
@@ -563,47 +607,43 @@ function setupDropZones(selector) {
     });
 }
 
-// Remember each chip’s home slot
-document.querySelectorAll(".chip-slot").forEach((slot, index) => {
-    const chip = slot.querySelector(".sound-chip");
-    chip.dataset.home = slot.id = "slot-" + index;
-});
-
-// Enable drops
 setupDropZones(".circle");
 setupDropZones(".chip-slot");
 
 /* RESET */
+
 function resetBoard() {
-    // Clear map boxes
     document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
 
-    // Return sound chips to home slots
     document.querySelectorAll(".sound-chip").forEach(chip => {
         const home = document.getElementById(chip.dataset.home);
         home.appendChild(chip);
     });
 
-    // Clear writing canvas
     clearCanvas();
 }
+
 /* TILE CONTENT */
+
 createTiles(
 ["a","b","c","d","e","f","g","h","i","j","k","l",
- "m","n","o","p","q","r","s","t","u","v","w","x","y","z","e_silent"," "],
+ "m","n","o","p","q","r","s","t","u","v","w","x","y","z","e_silent"],
 "letters");
 
 createTiles(["sh","th","ch","ph","wh","ck"],"digraphs");
 createTiles(["ff","ll","ss","zz","ed","ing"],"otherLeft");
+
 createTiles(["ar","er","ir","or","ur"],"rControlled");
+
 createTiles(
 ["ai","ay","ee","ea","oa","ow","ie","igh","ue","ui","ew","oe",
- "aw","au","ou","oo","oi","oy","eigh","ey","ei","oar","ore","oor"],
+ "aw","au","ou","oo","oi","oy","eigh","ey","ei"],
 "vowelTeams");
+
 createTiles(["dge","ng","nk","tch","qu","kn","wr","mb","gh","gn"],
 "otherRight");
 
-/* WRITING TOOL */
+/* WRITING TOOL (unchanged) */
 
 const canvas = document.getElementById("writingCanvas");
 const ctx = canvas.getContext("2d");
@@ -619,13 +659,8 @@ window.addEventListener("resize", resizeCanvas);
 let drawing = false;
 let erasing = false;
 
-function setPen() {
-    erasing = false;
-}
-
-function setEraser() {
-    erasing = true;
-}
+function setPen() { erasing = false; }
+function setEraser() { erasing = true; }
 
 function startDraw(e) {
     drawing = true;
@@ -635,7 +670,7 @@ function startDraw(e) {
 function endDraw() {
     drawing = false;
     ctx.beginPath();
-    ctx.globalCompositeOperation = "source-over"; // reset mode
+    ctx.globalCompositeOperation = "source-over";
 }
 
 function draw(e) {
@@ -649,7 +684,7 @@ function draw(e) {
 
     if (erasing) {
         ctx.globalCompositeOperation = "destination-out";
-        ctx.lineWidth = 25;  // larger for finger erasing
+        ctx.lineWidth = 25;
     } else {
         ctx.globalCompositeOperation = "source-over";
         ctx.strokeStyle = "#000";
@@ -673,7 +708,7 @@ canvas.addEventListener("touchmove", draw);
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
-    
+
 </script>
 
 </body>
