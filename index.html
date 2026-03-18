@@ -452,6 +452,8 @@ button {
 
 <script>
 
+ document.addEventListener("DOMContentLoaded", function() {
+
 let boardMode = false;
 
 function toggleMode() {
@@ -785,7 +787,69 @@ function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
+function dragStart(e) {
+    e.dataTransfer.setData("text", e.target.textContent);
+}
+
+document.querySelectorAll(".map-box").forEach(box => {
+    box.addEventListener("dragover", e => e.preventDefault());
+
+    box.addEventListener("drop", function(e) {
+        e.preventDefault();
+
+        const text = e.dataTransfer.getData("text");
+
+        this.innerHTML = "";
+
+        const tile = document.createElement("div");
+        tile.className = "tile";
+        tile.textContent = text;
+
+        this.appendChild(tile);
+    });
+});
+  
  enableDesktopMode();
+
+let boardMode = false;
+let selectedTile = null;
+
+function toggleMode() {
+    boardMode = !boardMode;
+
+    const btn = document.getElementById("modeBtn");
+    btn.textContent = boardMode ? "Desktop Mode" : "Board Mode";
+}
+
+document.addEventListener("click", function(e) {
+
+    if (!boardMode) return;
+
+    const tile = e.target.closest(".tile");
+
+    if (tile) {
+        document.querySelectorAll(".tile").forEach(t => t.classList.remove("selected"));
+        selectedTile = tile;
+        tile.classList.add("selected");
+        return;
+    }
+
+    const box = e.target.closest(".map-box");
+
+    if (box && selectedTile) {
+
+        if (selectedTile.parentElement.classList.contains("map-box")) {
+            selectedTile.parentElement.innerHTML = "";
+        }
+
+        box.innerHTML = "";
+
+        const clone = selectedTile.cloneNode(true);
+        box.appendChild(clone);
+    }
+});
+  
+ });
  
 </script>
 
