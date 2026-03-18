@@ -631,13 +631,19 @@ window.resetBoard = function() {
     /* 1. CLEAR MAP BOXES */
     document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
 
-    /* 2. RETURN SOUND CHIPS TO ORIGINAL SLOTS */
-    document.querySelectorAll(".sound-chip").forEach(chip => {
-        const home = document.getElementById(chip.dataset.home);
-        if (home) {
-            home.appendChild(chip);
+    /* 2. RESET SOUND CHIPS (FORCE BACK TO TOP ROW) */
+    const slots = document.querySelectorAll(".chip-slot");
+    const chips = document.querySelectorAll(".sound-chip");
+
+    chips.forEach((chip, index) => {
+        if (slots[index]) {
+            slots[index].appendChild(chip);
         }
     });
+
+    /* 3. CLEAR WRITING */
+    clearCanvas();
+};
 
     /* 3. CLEAR WRITING CANVAS */
     clearCanvas();
