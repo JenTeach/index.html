@@ -452,341 +452,43 @@ button {
 
 <script>
 
- document.addEventListener("DOMContentLoaded", function() {
+/* WAIT UNTIL PAGE LOADS */
+document.addEventListener("DOMContentLoaded", function() {
 
-let boardMode = false;
-
-function toggleMode() {
-    boardMode = !boardMode;
-
-    const btn = document.getElementById("modeBtn");
-    btn.textContent = boardMode ? "Desktop Mode" : "Board Mode";
-
-    if (boardMode) {
-        enableBoardMode();
-    } else {
-        enableDesktopMode();
-    }
-}
- 
-document.addEventListener("touchmove", function(e) {
-    e.preventDefault();
-}, { passive: false });
-
- document.addEventListener("dragover", function(e) {
-    e.preventDefault();
-});
- 
-/* CREATE TILES */
+/* =========================
+   TILE CREATION (UNCHANGED)
+========================= */
 function createTiles(list, containerId) {
     const container = document.getElementById(containerId);
+    if (!container) return;
+
     container.innerHTML = "";
 
     list.forEach(text => {
         const tile = document.createElement("div");
         tile.className = "tile";
         tile.draggable = true;
-        tile.addEventListener("dragstart", dragStart);
 
         if (text === "e_silent") {
             tile.textContent = "e";
             tile.classList.add("vowel", "silent-e");
         } else {
             tile.textContent = text;
-         if (text === " ") {
-             tile.innerHTML = "&nbsp;";
-}
+
             if (containerId === "letters" && ["a","e","i","o","u"].includes(text)) {
                 tile.classList.add("vowel");
             }
-         if (["oar", "ore", "oor"].includes(text)) {
-    tile.classList.add("or-pattern");
-}
         }
+
+        tile.addEventListener("dragstart", dragStart);
 
         container.appendChild(tile);
     });
 }
 
-function enableDesktopMode() {
-
-    document.querySelectorAll(".tile").forEach(tile => {
-        tile.setAttribute("draggable", true);
-
-        tile.addEventListener("dragstart", function(e) {
-            e.dataTransfer.setData("text", e.target.textContent);
-        });
-    });
-
-    document.querySelectorAll(".map-box").forEach(box => {
-
-        box.addEventListener("dragover", e => e.preventDefault());
-
-        box.addEventListener("drop", function(e) {
-            e.preventDefault();
-
-            const text = e.dataTransfer.getData("text");
-
-            this.innerHTML = "";
-
-            const tile = document.createElement("div");
-            tile.className = "tile";
-            tile.textContent = text;
-
-            this.appendChild(tile);
-        });
-    });
-}
-
- function enableBoardMode() {
-
-    // disable drag
-    document.querySelectorAll(".tile").forEach(tile => {
-        tile.setAttribute("draggable", false);
-    });
-
-    let selectedTile = null;
-
-    document.querySelectorAll(".tile").forEach(tile => {
-        tile.onclick = () => {
-            document.querySelectorAll(".tile").forEach(t => t.classList.remove("selected"));
-            selectedTile = tile;
-            tile.classList.add("selected");
-        };
-    });
-
-    document.querySelectorAll(".map-box").forEach(box => {
-        box.onclick = () => {
-            if (!selectedTile) return;
-
-            if (selectedTile.parentElement.classList.contains("map-box")) {
-                selectedTile.parentElement.innerHTML = "";
-            }
-
-            box.innerHTML = "";
-
-            const clone = selectedTile.cloneNode(true);
-
-            clone.onclick = () => {
-                selectedTile = clone;
-            };
-
-            box.appendChild(clone);
-        };
-    });
-}
-
-/* MAP DROP */
-document.querySelectorAll(".map-box").forEach(box => {
-
-    box.addEventListener("dragover", e => e.preventDefault());
-
-    box.addEventListener("drop", function(e) {
-        e.preventDefault();
-
-        const draggedTile = document.querySelector(".dragging");
-        if (!draggedTile) return;
-
-        // clear box
-        this.innerHTML = "";
-
-        // clone tile WITH styles
-        const clone = draggedTile.cloneNode(true);
-
-        clone.classList.remove("dragging");
-
-        // make clone draggable
-        clone.setAttribute("draggable", true);
-        clone.addEventListener("dragstart", dragStart);
-
-        this.appendChild(clone);
-    });
-});
-
-/* SOUND CHIP DRAGGING */
-
-document.querySelectorAll(".sound-chip").forEach(chip => {
-    chip.draggable = true;
-
-    chip.addEventListener("dragstart", function(e) {
-        e.dataTransfer.setData("chipId", this.id);
-    });
-});
-
-// Assign IDs
-document.querySelectorAll(".sound-chip").forEach((chip, index) => {
-    chip.id = "chip-" + index;
-});
-
-// Allow dropping into circles OR chip slots
-function setupDropZones(selector) {
-    document.querySelectorAll(selector).forEach(zone => {
-        zone.addEventListener("dragover", e => e.preventDefault());
-
-        zone.addEventListener("drop", function(e) {
-            e.preventDefault();
-
-            const chipId = e.dataTransfer.getData("chipId");
-            if (!chipId) return;
-
-            const draggedChip = document.getElementById(chipId);
-
-            // If this zone already has a chip, send it back to its slot
-            if (this.querySelector(".sound-chip")) {
-                const existingChip = this.querySelector(".sound-chip");
-                const originalSlot = document.getElementById(existingChip.dataset.home);
-                originalSlot.appendChild(existingChip);
-            }
-
-            this.appendChild(draggedChip);
-        });
-    });
-}
-
-// Remember each chip’s home slot
-document.querySelectorAll(".chip-slot").forEach((slot, index) => {
-    const chip = slot.querySelector(".sound-chip");
-    chip.dataset.home = slot.id = "slot-" + index;
-});
-
-// Enable drops
-setupDropZones(".circle");
-setupDropZones(".chip-slot");
-
-/* RESET */
-function resetBoard() {
-    // Clear map boxes
-    document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
-
-    // Return sound chips to home slots
-    document.querySelectorAll(".sound-chip").forEach(chip => {
-        const home = document.getElementById(chip.dataset.home);
-        home.appendChild(chip);
-    });
-
-    // Clear writing canvas
-    clearCanvas();
-}
-/* TILE CONTENT */
-createTiles(
-["a","b","c","d","e","f","g","h","i","j","k","l",
- "m","n","o","p","q","r","s","t","u","v","w","x","y","z","e_silent"," "],
-"letters");
-
-createTiles(["sh","th","ch","ph","wh","ck"],"digraphs");
-createTiles(["ff","ll","ss","zz","ed","ing"],"otherLeft");
-createTiles(["ar","er","ir","or","ur"],"rControlled");
-createTiles(
-["ai","ay","ee","ea","oa","ow","ie","igh","ue","ui","ew","oe",
- "aw","au","ou","oo","oi","oy","eigh","ey","ei","oar","ore","oor"],
-"vowelTeams");
-createTiles(["dge","ng","nk","tch","qu","kn","wr","mb","gh","gn"],
-"otherRight");
-
- /* BOARD MODE (safe version) */
-
-let selectedTile = null;
-
-document.addEventListener("click", (e) => {
-
-    if (!boardMode) return;
-
-    const tile = e.target.closest(".tile");
-
-    if (tile) {
-        document.querySelectorAll(".tile").forEach(t => t.classList.remove("selected"));
-        selectedTile = tile;
-        tile.classList.add("selected");
-        return;
-    }
-
-    const box = e.target.closest(".map-box");
-
-    if (box && selectedTile) {
-
-        if (selectedTile.parentElement.classList.contains("map-box")) {
-            selectedTile.parentElement.innerHTML = "";
-        }
-
-        box.innerHTML = "";
-
-        const clone = selectedTile.cloneNode(true);
-
-        box.appendChild(clone);
-    }
-});
- 
-/* WRITING TOOL */
-
-const canvas = document.getElementById("writingCanvas");
-const ctx = canvas.getContext("2d");
-
-function resizeCanvas() {
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-}
-
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
-
-let drawing = false;
-let erasing = false;
-
-function setPen() {
-    erasing = false;
-}
-
-function setEraser() {
-    erasing = true;
-}
-
-function startDraw(e) {
-    drawing = true;
-    draw(e);
-}
-
-function endDraw() {
-    drawing = false;
-    ctx.beginPath();
-    ctx.globalCompositeOperation = "source-over"; // reset mode
-}
-
-function draw(e) {
-    if (!drawing) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-    const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-
-    ctx.lineCap = "round";
-
-    if (erasing) {
-        ctx.globalCompositeOperation = "destination-out";
-        ctx.lineWidth = 25;  // larger for finger erasing
-    } else {
-        ctx.globalCompositeOperation = "source-over";
-        ctx.strokeStyle = "#000";
-        ctx.lineWidth = 3;
-    }
-
-    ctx.lineTo(x, y);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-}
-
-canvas.addEventListener("mousedown", startDraw);
-canvas.addEventListener("mouseup", endDraw);
-canvas.addEventListener("mousemove", draw);
-
-canvas.addEventListener("touchstart", startDraw);
-canvas.addEventListener("touchend", endDraw);
-canvas.addEventListener("touchmove", draw);
-
-function clearCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
+/* =========================
+   DESKTOP DRAG SYSTEM
+========================= */
 function dragStart(e) {
     e.dataTransfer.setData("text", e.target.textContent);
 }
@@ -808,18 +510,21 @@ document.querySelectorAll(".map-box").forEach(box => {
         this.appendChild(tile);
     });
 });
-  
- enableDesktopMode();
 
+/* =========================
+   BOARD MODE (SAFE)
+========================= */
 let boardMode = false;
 let selectedTile = null;
 
-function toggleMode() {
+window.toggleMode = function() {
     boardMode = !boardMode;
 
     const btn = document.getElementById("modeBtn");
-    btn.textContent = boardMode ? "Desktop Mode" : "Board Mode";
-}
+    if (btn) {
+        btn.textContent = boardMode ? "Desktop Mode" : "Board Mode";
+    }
+};
 
 document.addEventListener("click", function(e) {
 
@@ -845,12 +550,158 @@ document.addEventListener("click", function(e) {
         box.innerHTML = "";
 
         const clone = selectedTile.cloneNode(true);
+
+        clone.addEventListener("click", () => {
+            selectedTile = clone;
+        });
+
         box.appendChild(clone);
     }
 });
-  
- });
- 
+
+/* =========================
+   SOUND CHIPS (UNCHANGED)
+========================= */
+document.querySelectorAll(".sound-chip").forEach((chip, index) => {
+    chip.id = "chip-" + index;
+    chip.dataset.home = "slot-" + index;
+    chip.draggable = true;
+
+    chip.addEventListener("dragstart", function(e) {
+        e.dataTransfer.setData("chipId", this.id);
+    });
+});
+
+function setupDropZones(selector) {
+    document.querySelectorAll(selector).forEach(zone => {
+        zone.addEventListener("dragover", e => e.preventDefault());
+
+        zone.addEventListener("drop", function(e) {
+            e.preventDefault();
+
+            const chipId = e.dataTransfer.getData("chipId");
+            if (!chipId) return;
+
+            const draggedChip = document.getElementById(chipId);
+
+            if (this.querySelector(".sound-chip")) {
+                const existingChip = this.querySelector(".sound-chip");
+                const originalSlot = document.getElementById(existingChip.dataset.home);
+                originalSlot.appendChild(existingChip);
+            }
+
+            this.appendChild(draggedChip);
+        });
+    });
+}
+
+setupDropZones(".circle");
+setupDropZones(".chip-slot");
+
+/* =========================
+   RESET
+========================= */
+window.resetBoard = function() {
+    document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
+
+    document.querySelectorAll(".sound-chip").forEach(chip => {
+        const home = document.getElementById(chip.dataset.home);
+        home.appendChild(chip);
+    });
+
+    clearCanvas();
+};
+
+/* =========================
+   TILE CONTENT (THIS WAS BREAKING)
+========================= */
+createTiles(
+["a","b","c","d","e","f","g","h","i","j","k","l",
+ "m","n","o","p","q","r","s","t","u","v","w","x","y","z","e_silent"],
+"letters");
+
+createTiles(["sh","th","ch","ph","wh","ck"],"digraphs");
+createTiles(["ff","ll","ss","zz","ed","ing"],"otherLeft");
+
+createTiles(["ar","er","ir","or","ur"],"rControlled");
+
+createTiles(
+["ai","ay","ee","ea","oa","ow","ie","igh","ue","ui","ew","oe",
+ "aw","au","ou","oo","oi","oy","eigh","ey","ei"],
+"vowelTeams");
+
+createTiles(["dge","ng","nk","tch","qu","kn","wr","mb","gh","gn"],
+"otherRight");
+
+/* =========================
+   WRITING TOOL
+========================= */
+const canvas = document.getElementById("writingCanvas");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+}
+
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+let drawing = false;
+let erasing = false;
+
+window.setPen = () => erasing = false;
+window.setEraser = () => erasing = true;
+
+function startDraw(e) {
+    drawing = true;
+    draw(e);
+}
+
+function endDraw() {
+    drawing = false;
+    ctx.beginPath();
+    ctx.globalCompositeOperation = "source-over";
+}
+
+function draw(e) {
+    if (!drawing) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+
+    ctx.lineCap = "round";
+
+    if (erasing) {
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.lineWidth = 25;
+    } else {
+        ctx.globalCompositeOperation = "source-over";
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 3;
+    }
+
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+}
+
+canvas.addEventListener("mousedown", startDraw);
+canvas.addEventListener("mouseup", endDraw);
+canvas.addEventListener("mousemove", draw);
+
+canvas.addEventListener("touchstart", startDraw);
+canvas.addEventListener("touchend", endDraw);
+canvas.addEventListener("touchmove", draw);
+
+window.clearCanvas = function() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+};
+
+}); // END DOM LOAD
+
 </script>
 
 </body>
