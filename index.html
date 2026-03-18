@@ -333,7 +333,12 @@ button {
 .top-controls button {
     font-size: 18px;
 }
-    
+
+ .or-pattern {
+    background-color: #f6c26b;  /* soft orange-yellow */
+    color: black;
+}
+ 
 </style>
 </head>
 
@@ -469,6 +474,9 @@ function createTiles(list, containerId) {
             if (containerId === "letters" && ["a","e","i","o","u"].includes(text)) {
                 tile.classList.add("vowel");
             }
+         if (["oar", "ore", "oor"].includes(text)) {
+    tile.classList.add("or-pattern");
+}
         }
 
         container.appendChild(tile);
