@@ -635,19 +635,19 @@ setupDropZones(".chip-slot");
 ========================= */
 window.resetBoard = function() {
 
-    // Clear map boxes
-    document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
-
-    // Return chips to original slots
-    document.querySelectorAll(".sound-chip").forEach(chip => {
-        const home = document.getElementById(chip.dataset.home);
-
-        if (home) {
-            home.appendChild(chip);
-        }
+    // 1. Clear map boxes
+    document.querySelectorAll(".map-box").forEach(box => {
+        box.innerHTML = "";
     });
 
-    // Clear writing
+    // 2. Move ALL chips back into chip-bank (top row)
+    const bank = document.querySelector(".chip-bank");
+
+    document.querySelectorAll(".sound-chip").forEach(chip => {
+        bank.appendChild(chip);
+    });
+
+    // 3. Clear writing
     clearCanvas();
 };
 
