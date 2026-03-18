@@ -338,6 +338,10 @@ button {
     background-color: ##fff4cc;  /* soft orange-yellow */
     color: black;
 }
+
+ .selected {
+    outline: 3px solid #ffcc00;
+}
  
 </style>
 </head>
@@ -677,6 +681,39 @@ createTiles(
 createTiles(["dge","ng","nk","tch","qu","kn","wr","mb","gh","gn"],
 "otherRight");
 
+ /* BOARD MODE (safe version) */
+
+let selectedTile = null;
+
+document.addEventListener("click", (e) => {
+
+    if (!boardMode) return;
+
+    const tile = e.target.closest(".tile");
+
+    if (tile) {
+        document.querySelectorAll(".tile").forEach(t => t.classList.remove("selected"));
+        selectedTile = tile;
+        tile.classList.add("selected");
+        return;
+    }
+
+    const box = e.target.closest(".map-box");
+
+    if (box && selectedTile) {
+
+        if (selectedTile.parentElement.classList.contains("map-box")) {
+            selectedTile.parentElement.innerHTML = "";
+        }
+
+        box.innerHTML = "";
+
+        const clone = selectedTile.cloneNode(true);
+
+        box.appendChild(clone);
+    }
+});
+ 
 /* WRITING TOOL */
 
 const canvas = document.getElementById("writingCanvas");
