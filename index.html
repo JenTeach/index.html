@@ -350,11 +350,15 @@ button {
  .selected {
     outline: 3px solid #ffcc00;
 }
-
+ 
+.board-mode #app {
+    transform: scale(0.88);
+    transform-origin: top left;
+}
+ 
 #app {
     transform: scale(0.88);
-    transform-origin: top center;
-    width: 113%;
+    transform-origin: top left;
 }
  
 </style>
@@ -537,8 +541,13 @@ window.toggleMode = function() {
     boardMode = !boardMode;
 
     const btn = document.getElementById("modeBtn");
-    if (btn) {
-        btn.textContent = boardMode ? "Desktop Mode" : "Board Mode";
+
+    if (boardMode) {
+        document.body.classList.add("board-mode");   // 👈 THIS triggers scaling
+        btn.textContent = "Desktop Mode";
+    } else {
+        document.body.classList.remove("board-mode");
+        btn.textContent = "Board Mode";
     }
 };
 
