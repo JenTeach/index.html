@@ -587,9 +587,16 @@ document.addEventListener("click", function(e) {
 /* =========================
    SOUND CHIPS (UNCHANGED)
 ========================= */
-document.querySelectorAll(".sound-chip").forEach((chip, index) => {
-    chip.id = "chip-" + index;
-    chip.dataset.home = "slot-" + index;
+document.querySelectorAll(".chip-slot").forEach((slot, index) => {
+    slot.id = "slot-" + index;
+
+    const chip = slot.querySelector(".sound-chip");
+
+    if (chip) {
+        chip.id = "chip-" + index;
+        chip.dataset.home = slot.id;
+    }
+});
     chip.draggable = true;
 
     chip.addEventListener("dragstart", function(e) {
@@ -631,9 +638,10 @@ window.resetBoard = function() {
     // Clear map boxes
     document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
 
-    // Reset chips properly
+    // Return chips to original slots
     document.querySelectorAll(".sound-chip").forEach(chip => {
         const home = document.getElementById(chip.dataset.home);
+
         if (home) {
             home.appendChild(chip);
         }
