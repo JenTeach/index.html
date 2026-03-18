@@ -352,7 +352,7 @@ button {
 }
  
 .board-mode #app {
-    transform: scale(0.88);
+    transform: scale(0.85);
     transform-origin: top left;
 }
  
@@ -628,24 +628,18 @@ setupDropZones(".chip-slot");
 ========================= */
 window.resetBoard = function() {
 
-    /* 1. CLEAR MAP BOXES */
+    // Clear map boxes
     document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
 
-    /* 2. RESET SOUND CHIPS (FORCE BACK TO TOP ROW) */
-    const slots = document.querySelectorAll(".chip-slot");
-    const chips = document.querySelectorAll(".sound-chip");
-
-    chips.forEach((chip, index) => {
-        if (slots[index]) {
-            slots[index].appendChild(chip);
+    // Reset chips properly
+    document.querySelectorAll(".sound-chip").forEach(chip => {
+        const home = document.getElementById(chip.dataset.home);
+        if (home) {
+            home.appendChild(chip);
         }
     });
 
-    /* 3. CLEAR WRITING */
-    clearCanvas();
-};
-
-    /* 3. CLEAR WRITING CANVAS */
+    // Clear writing
     clearCanvas();
 };
 
