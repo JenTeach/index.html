@@ -199,12 +199,18 @@ h2 {
     cursor: grab;
 }
 
-    .chip-slot {
+.chip-slot {
     width: 65px;
     height: 65px;
     display: flex;
     align-items: center;
     justify-content: center;
+
+    border-radius: 50%;
+}
+
+ .chip-slot:empty {
+    border: 2px dashed #ccc;
 }
     
 /* TAP CIRCLES */
@@ -617,7 +623,9 @@ function setupDropZones(selector) {
                 originalSlot.appendChild(existingChip);
             }
 
-            this.appendChild(draggedChip);
+            const clone = draggedChip.cloneNode(true);
+            this.innerHTML = "";
+            this.appendChild(clone);
         });
     });
 }
