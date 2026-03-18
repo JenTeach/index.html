@@ -8,12 +8,7 @@
 
 <style>
 
- html, body {
-    touch-action: none;
-    overscroll-behavior: none;
-}
- 
- .top-bar {
+.top-bar {
     height: 90px;
     background: white;
     display: grid;
@@ -27,686 +22,223 @@
     justify-self: start;
     font-size: 13px;
     color: #777;
-    line-height: 1.4;
-}
-
-.top-center {
-    text-align: center;
 }
 
 .top-center h1 {
     margin: 0;
-    font-size: 52px;   /* bigger */
+    font-size: 52px;
     letter-spacing: 2px;
-    font-weight: 600;
     color: #2f5aa8;
 }
 
 .top-right {
     justify-self: end;
-    align-self: center;   /* 👈 forces vertical center */
 }
 
-.top-bar button {
-    font-size: 18px;
-    margin: 0;
-}
-    
-    .workspace-title {
-    text-align: center;
-    font-size: 36px;
-    margin: 0 0 15px 0;
-    color: #2f5aa8;
-}
-
-    .title-block {
-    text-align: center;
-}
-
-.author-line {
-    font-size: 12px;
-    color: #999;
-}
-
-    
-.center-panel {
-    width: 40%;
-    background: white;
-    padding: 8px 20px;
-    box-sizing: border-box;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;   /* centers everything horizontally */
-}
-
-body {
-    margin: 0;
-    font-family: "Poppins", sans-serif;
-    background: #f2f2f2;
-}
-
-    .main-title {
-    text-align: center;
-    font-size: 48px;
-    margin: 20px 0;
-    color: #2f5aa8;
-    font-weight: 600;
-    letter-spacing: 1px;
-}
-    
 .container {
     display: flex;
     height: calc(100vh - 90px);
-    align-items: flex-end;   /* 👈 THIS is the key */
+    align-items: flex-end;
 }
 
-/* LEFT PANEL */
-.left-panel {
+.left-panel, .right-panel {
     width: 30%;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;   /* 👈 pushes sections to bottom */
+    justify-content: flex-end;
+}
+
+.center-panel {
+    width: 40%;
+    background: white;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .section {
     padding: 10px;
-    box-sizing: border-box;
-    overflow: visible;
-
-    display: flex;
-    flex-direction: column;
 }
 
-/* Tile grids (6 across) */
-#letters,
-#digraphs,
-#otherLeft,
-#rControlled,
-#vowelTeams,
-#otherRight {
+.blue { background: #2f5aa8; color: white; }
+.green { background: #4caf50; color: white; }
+.purple { background: #6a4fa3; color: white; }
+.orange { background: #f39c12; color: white; }
+.pink { background: #e91e63; color: white; }
+.darkpurple { background: #5e3c99; color: white; }
+
+.tile {
+    background: white;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 22px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.vowel { color: #d32f2f; }
+.silent-e { background: #bdbdbd; }
+
+#letters, #digraphs, #otherLeft, #rControlled, #vowelTeams, #otherRight {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 6px;
 }
 
-/* Color Sections */
-.blue { background: #2f5aa8; color: white; }
-.green { background: #4caf50; color: white; }
-.purple { background: #6a4fa3; color: white; }
-
-.section h3 {
-    margin-top: 0;
-}
-
-.tile {
-    background: white;
-    color: black;
-    padding: 14px 18px;
-    border-radius: 10px;
-    font-size: 22px;
-    cursor: grab;
-    text-align: center;
-}
-
-.vowel {
-    color: #d32f2f;
-    font-weight: 600;
-}
-
-.silent-e {
-    background-color: #bdbdbd;
-    color: black;
-}
-
-/* CENTER PANEL */
-.center-panel {
-    width: 40%;
-    background: white;
-    padding: 8px 20px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-}
-
-h2 {
-    text-align: center;
-    margin: 12px 0 12px 0;  /* consistent spacing */
-}
-
-/* SOUND CHIP BANK */
-.chip-bank {
+.chip-bank, .circle-container, .map-boxes {
     display: grid;
     grid-template-columns: repeat(6, 65px);
-    justify-content: center;
     gap: 12px;
-    margin-bottom: 15px;
+    justify-content: center;
+}
+
+.circle, .map-box, .chip-slot {
+    width: 65px;
+    height: 65px;
+}
+
+.circle {
+    border: 3px solid #999;
+    border-radius: 50%;
+}
+
+.map-box {
+    border: 3px solid #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sound-chip {
     width: 65px;
     height: 65px;
     border-radius: 50%;
-    background: #e53935;
-    cursor: grab;
+    background: red;
 }
 
-    .chip-slot {
-    width: 65px;
-    height: 65px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-    
-/* TAP CIRCLES */
-.circle-container {
-    display: grid;
-    grid-template-columns: repeat(6, 65px);
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 20px;
+.selected {
+    outline: 3px solid #ffcc00;
 }
 
-.circle {
-    width: 65px;
-    height: 65px;
-    border: 3px solid #999;
-    border-radius: 50%;
-    background: white;
-}
-
-/* MAP IT */
-.map-boxes {
-    display: grid;
-    grid-template-columns: repeat(6, 65px);
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.map-box {
-    width: 65px;
-    height: 65px;
-    border: 3px solid #999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
-}
-
-/* WRITE IT */
 .write-area {
-    position: relative;
-    height: 180px;   /* gives room for wide spacing */
+    height: 180px;
     width: 85%;
-    margin-bottom: 20px;
     border: 3px solid #999;
-
-    background:
-        /* Top solid blue */
-        linear-gradient(#1976d2, #1976d2) 0 40px / 100% 3px no-repeat,
-
-        /* Middle dashed blue */
-        repeating-linear-gradient(
-            to right,
-            #1976d2 0px,
-            #1976d2 10px,
-            transparent 10px,
-            transparent 20px
-        ) 0 90px / 100% 3px no-repeat,
-
-        /* Bottom solid red */
-        linear-gradient(#d32f2f, #d32f2f) 0 140px / 100% 3px no-repeat;
-
-    background-color: white;
+    margin-bottom: 20px;
+    position: relative;
 }
 
-.writing-tools {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    display: flex;
-    gap: 6px;
-}
-
-.writing-tools button {
-    font-size: 14px;
-    padding: 4px 8px;
-}
-    
-#writingCanvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.clear-writing {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    font-size: 14px;
-}
-
-/* RIGHT PANEL */
-.right-panel {
-    width: 30%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;   /* 👈 pushes sections to bottom */
-}
-    
-.left-panel,
-.right-panel {
-    width: 30%;
-    display: flex;
-    flex-direction: column;
-} 
-    
-.orange { background: #f39c12; color: white; }
-.pink { background: #e91e63; color: white; }
-.darkpurple { background: #5e3c99; color: white; }
-
-button {
-    padding: 10px 20px;
-    font-size: 18px;
-    border-radius: 8px;
-    border: none;
-    background: #2f5aa8;
-    color: white;
-    margin: 5px;
-    cursor: pointer;
-}
-
-.button-row {
-    text-align: center;
-}
-
-    .top-controls {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-}
-
-.top-controls button {
-    font-size: 18px;
-}
-
- .or-pattern {
-    background-color: ##fff4cc;  /* soft orange-yellow */
-    color: black;
-}
- 
 </style>
 </head>
 
 <body>
 
 <div class="top-bar">
-    <div class="top-left">
-        <div>Created by Jen Shepherd © 2026</div>
-        <div>Farragut Primary | Knox County Schools</div>
-        <div>Based on Benchmark Word Building Routine</div>
-    </div>
-
-    <div class="top-center">
-        <h1>Word Builder</h1>
-    </div>
-
-    <div class="top-right">
-        <button onclick="resetBoard()">Reset</button>
-    </div>
+    <div class="top-left">Created by Jen Shepherd © 2026</div>
+    <div class="top-center"><h1>Word Builder</h1></div>
+    <div class="top-right"><button onclick="resetBoard()">Reset</button></div>
 </div>
 
 <div class="container">
 
 <div class="left-panel">
-
-    <div class="section blue">
-        <h3>Consonants & Vowels</h3>
-        <div id="letters"></div>
-    </div>
-
-    <div class="section green">
-        <h3>Common Consonant Digraphs</h3>
-        <div id="digraphs"></div>
-    </div>
-
-    <div class="section purple">
-        <h3>Other</h3>
-        <div id="otherLeft"></div>
-    </div>
+<div class="section blue"><h3>Letters</h3><div id="letters"></div></div>
 </div>
 
 <div class="center-panel">
-    
-    <h2>Tap It!</h2>
 
-    <div class="chip-bank">
-    <div class="chip-slot"><div class="sound-chip"></div></div>
-    <div class="chip-slot"><div class="sound-chip"></div></div>
-    <div class="chip-slot"><div class="sound-chip"></div></div>
-    <div class="chip-slot"><div class="sound-chip"></div></div>
-    <div class="chip-slot"><div class="sound-chip"></div></div>
-    <div class="chip-slot"><div class="sound-chip"></div></div>
+<h2>Tap It</h2>
+<div class="chip-bank">
+<div class="chip-slot"><div class="sound-chip"></div></div>
+<div class="chip-slot"><div class="sound-chip"></div></div>
+<div class="chip-slot"><div class="sound-chip"></div></div>
+<div class="chip-slot"><div class="sound-chip"></div></div>
+<div class="chip-slot"><div class="sound-chip"></div></div>
+<div class="chip-slot"><div class="sound-chip"></div></div>
 </div>
 
-    <div class="circle-container">
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-    </div>
-
-    <h2>Map It!</h2>
-    <div class="map-boxes">
-        <div class="map-box"></div>
-        <div class="map-box"></div>
-        <div class="map-box"></div>
-        <div class="map-box"></div>
-        <div class="map-box"></div>
-        <div class="map-box"></div>
-    </div>
-
-    <h2>Write It!</h2>
-   <div class="write-area">
-    <canvas id="writingCanvas"></canvas>
-
-    <div class="writing-tools">
-        <button onclick="setPen()">Pen</button>
-        <button onclick="setEraser()">Eraser</button>
-        <button onclick="clearCanvas()">Clear</button>
-    </div>
-</div>
-    
+<div class="circle-container">
+<div class="circle"></div><div class="circle"></div><div class="circle"></div>
+<div class="circle"></div><div class="circle"></div><div class="circle"></div>
 </div>
 
-<div class="right-panel">
-    
-    <div class="section orange">
-        <h3>r-Controlled Vowels</h3>
-        <div id="rControlled"></div>
-    </div>
+<h2>Map It</h2>
+<div class="map-boxes">
+<div class="map-box"></div><div class="map-box"></div><div class="map-box"></div>
+<div class="map-box"></div><div class="map-box"></div><div class="map-box"></div>
+</div>
 
-    <div class="section pink">
-        <h3>Vowel Teams</h3>
-        <div id="vowelTeams"></div>
-    </div>
+<h2>Write It</h2>
+<div class="write-area"></div>
 
-    <div class="section darkpurple">
-        <h3>Other</h3>
-        <div id="otherRight"></div>
-    </div>
 </div>
 
 </div>
 
 <script>
 
-/* CREATE TILES */
+/* CREATE LETTER TILES */
 function createTiles(list, containerId) {
     const container = document.getElementById(containerId);
-    container.innerHTML = "";
 
     list.forEach(text => {
         const tile = document.createElement("div");
         tile.className = "tile";
         tile.textContent = text;
 
-        if (text === "e_silent") {
-            tile.textContent = "e";
-            tile.classList.add("vowel", "silent-e");
-        } 
-        else {
-            tile.textContent = text;
-
-            if (containerId === "letters" && ["a","e","i","o","u"].includes(text)) {
-                tile.classList.add("vowel");
-            }
-        }
+        if (["a","e","i","o","u"].includes(text)) tile.classList.add("vowel");
+        if (text === "e") tile.classList.add("silent-e");
 
         container.appendChild(tile);
     });
 }
 
-/* POINTER-BASED DRAG SYSTEM */
+createTiles(["a","b","c","d","e","f","g","h","i","j","k","l",
+"m","n","o","p","q","r","s","t","u","v","w","x","y","z"], "letters");
 
-let draggedTile = null;
-let offsetX = 0;
-let offsetY = 0;
-let originalParent = null;
+/* TOUCH-FRIENDLY TILE SYSTEM */
 
-/* START DRAG */
-document.addEventListener("pointerdown", (e) => {
+let selectedTile = null;
+
+/* SELECT TILE */
+document.addEventListener("click", (e) => {
     const tile = e.target.closest(".tile");
     if (!tile) return;
 
-    draggedTile = tile;
-    originalParent = tile.parentElement;
+    document.querySelectorAll(".tile").forEach(t => t.classList.remove("selected"));
 
-    const rect = tile.getBoundingClientRect();
-
-    offsetX = e.clientX - rect.left;
-    offsetY = e.clientY - rect.top;
-
-    tile.style.position = "absolute";
-    tile.style.zIndex = "1000";
-    tile.style.pointerEvents = "none";
-
-    document.body.appendChild(tile);
+    selectedTile = tile;
+    tile.classList.add("selected");
 });
 
-/* MOVE TILE */
-document.addEventListener("pointermove", (e) => {
-    if (!draggedTile) return;
+/* PLACE TILE */
+document.querySelectorAll(".map-box").forEach(box => {
+    box.addEventListener("click", () => {
 
-    draggedTile.style.left = (e.clientX - offsetX) + "px";
-    draggedTile.style.top = (e.clientY - offsetY) + "px";
-});
+        if (!selectedTile) return;
 
-/* DROP TILE */
-document.addEventListener("pointerup", (e) => {
-    if (!draggedTile) return;
-
-    const boxes = document.querySelectorAll(".map-box");
-    let dropped = false;
-
-    boxes.forEach(box => {
-        const rect = box.getBoundingClientRect();
-
-        if (
-            e.clientX >= rect.left &&
-            e.clientX <= rect.right &&
-            e.clientY >= rect.top &&
-            e.clientY <= rect.bottom
-        ) {
-            // Clear existing tile
-            box.innerHTML = "";
-
-            // Clone tile WITH formatting
-            const clone = draggedTile.cloneNode(true);
-
-            clone.style.position = "";
-            clone.style.left = "";
-            clone.style.top = "";
-            clone.style.zIndex = "";
-            clone.style.pointerEvents = "";
-
-            box.appendChild(clone);
-            dropped = true;
-        }
-    });
-
-    // Return tile if dropped outside
-    if (!dropped) {
-        draggedTile.style.position = "";
-        draggedTile.style.left = "";
-        draggedTile.style.top = "";
-        draggedTile.style.zIndex = "";
-        draggedTile.style.pointerEvents = "";
-
-        originalParent.appendChild(draggedTile);
-    } else {
-        // If tile came from map box, remove original
-        if (originalParent.classList.contains("map-box")) {
-            originalParent.innerHTML = "";
+        // remove tile from old box if needed
+        if (selectedTile.parentElement.classList.contains("map-box")) {
+            selectedTile.parentElement.innerHTML = "";
         }
 
-        // If from bank, reset original tile back
-        draggedTile.style.position = "";
-        draggedTile.style.left = "";
-        draggedTile.style.top = "";
-        draggedTile.style.zIndex = "";
-        draggedTile.style.pointerEvents = "";
+        box.innerHTML = "";
 
-        originalParent.appendChild(draggedTile);
-    }
+        const clone = selectedTile.cloneNode(true);
 
-    draggedTile = null;
-    originalParent = null;
-});
-
-/* SOUND CHIP DRAGGING (unchanged) */
-
-document.querySelectorAll(".sound-chip").forEach((chip, index) => {
-    chip.id = "chip-" + index;
-    chip.dataset.home = "slot-" + index;
-    chip.draggable = true;
-
-    chip.addEventListener("dragstart", function(e) {
-        e.dataTransfer.setData("chipId", this.id);
-    });
-});
-
-/* DROP ZONES FOR SOUND CHIPS */
-
-function setupDropZones(selector) {
-    document.querySelectorAll(selector).forEach(zone => {
-        zone.addEventListener("dragover", e => e.preventDefault());
-
-        zone.addEventListener("drop", function(e) {
-            e.preventDefault();
-
-            const chipId = e.dataTransfer.getData("chipId");
-            if (!chipId) return;
-
-            const draggedChip = document.getElementById(chipId);
-
-            if (this.querySelector(".sound-chip")) {
-                const existingChip = this.querySelector(".sound-chip");
-                const originalSlot = document.getElementById(existingChip.dataset.home);
-                originalSlot.appendChild(existingChip);
-            }
-
-            this.appendChild(draggedChip);
+        clone.addEventListener("click", () => {
+            selectedTile = clone;
         });
-    });
-}
 
-setupDropZones(".circle");
-setupDropZones(".chip-slot");
+        box.appendChild(clone);
+    });
+});
 
 /* RESET */
 
 function resetBoard() {
     document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
-
-    document.querySelectorAll(".sound-chip").forEach(chip => {
-        const home = document.getElementById(chip.dataset.home);
-        home.appendChild(chip);
-    });
-
-    clearCanvas();
-}
-
-/* TILE CONTENT */
-
-createTiles(
-["a","b","c","d","e","f","g","h","i","j","k","l",
- "m","n","o","p","q","r","s","t","u","v","w","x","y","z","e_silent"],
-"letters");
-
-createTiles(["sh","th","ch","ph","wh","ck"],"digraphs");
-createTiles(["ff","ll","ss","zz","ed","ing"],"otherLeft");
-
-createTiles(["ar","er","ir","or","ur"],"rControlled");
-
-createTiles(
-["ai","ay","ee","ea","oa","ow","ie","igh","ue","ui","ew","oe",
- "aw","au","ou","oo","oi","oy","eigh","ey","ei"],
-"vowelTeams");
-
-createTiles(["dge","ng","nk","tch","qu","kn","wr","mb","gh","gn"],
-"otherRight");
-
-/* WRITING TOOL (unchanged) */
-
-const canvas = document.getElementById("writingCanvas");
-const ctx = canvas.getContext("2d");
-
-function resizeCanvas() {
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-}
-
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
-
-let drawing = false;
-let erasing = false;
-
-function setPen() { erasing = false; }
-function setEraser() { erasing = true; }
-
-function startDraw(e) {
-    drawing = true;
-    draw(e);
-}
-
-function endDraw() {
-    drawing = false;
-    ctx.beginPath();
-    ctx.globalCompositeOperation = "source-over";
-}
-
-function draw(e) {
-    if (!drawing) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-    const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-
-    ctx.lineCap = "round";
-
-    if (erasing) {
-        ctx.globalCompositeOperation = "destination-out";
-        ctx.lineWidth = 25;
-    } else {
-        ctx.globalCompositeOperation = "source-over";
-        ctx.strokeStyle = "#000";
-        ctx.lineWidth = 3;
-    }
-
-    ctx.lineTo(x, y);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-}
-
-canvas.addEventListener("mousedown", startDraw);
-canvas.addEventListener("mouseup", endDraw);
-canvas.addEventListener("mousemove", draw);
-
-canvas.addEventListener("touchstart", startDraw);
-canvas.addEventListener("touchend", endDraw);
-canvas.addEventListener("touchmove", draw);
-
-function clearCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 </script>
