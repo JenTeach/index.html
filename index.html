@@ -520,45 +520,58 @@ document.addEventListener("dragstart", (e) => {
         e.target.classList.add("dragging");
     }
 });
+
+ document.addEventListener("dragend", (e) => {
+    if (e.target.classList.contains("tile")) {
+        e.target.classList.remove("dragging");
+    }
+});
  
 document.querySelectorAll(".map-box").forEach(box => {
 
-    box.addEventListener("dragover", e => e.preventDefault());
+document.querySelectorAll(".map-box").forEach(function(box) {
+
+    box.addEventListener("dragover", function(e) {
+        e.preventDefault();
+    });
 
     box.addEventListener("drop", function(e) {
         e.preventDefault();
 
-        const text = e.dataTransfer.getData("text");
+        var text = e.dataTransfer.getData("text");
         if (!text) return;
 
-        const draggedEl = document.querySelector(".dragging");
+        var draggedTile = document.querySelector(".dragging");
 
-        // If dragging from another map box → MOVE it
-        if (draggedEl && draggedEl.parentElement.classList.contains("map-box")) {
-            draggedEl.parentElement.innerHTML = "";
-            this.innerHTML = "";
-            this.appendChild(draggedEl);
-            draggedEl.classList.remove("dragging");
+        // If tile came from another box → MOVE it
+        if (draggedTile && draggedTile.parentElement.classList.contains("map-box")) {
+            draggedTile.parentElement.innerHTML = "";
+            box.innerHTML = "";
+            box.appendChild(draggedTile);
             return;
         }
 
-        // From bank → CREATE tile (with formatting)
-        this.innerHTML = "";
+        // If tile came from bank → CREATE a new tile
+        box.innerHTML = "";
 
-        const tile = document.createElement("div");
+        var tile = document.createElement("div");
         tile.className = "tile";
         tile.textContent = text;
 
-        // preserve formatting
-        if (["a","e","i","o","u"].includes(text)) tile.classList.add("vowel");
-        if (text === "e") tile.classList.add("silent-e");
+        // Keep colors
+        if (["a","e","i","o","u"].includes(text)) {
+            tile.classList.add("vowel");
+        }
+        if (text === "e") {
+            tile.classList.add("silent-e");
+        }
 
         tile.setAttribute("draggable", true);
         tile.addEventListener("dragstart", dragStart);
 
-        this.appendChild(tile);
+        box.appendChild(tile);
     });
-});
+});    
 
 /* =========================
    BOARD MODE (SAFE)
