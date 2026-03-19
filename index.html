@@ -517,6 +517,7 @@ function dragStart(e) {
 }
 
 document.querySelectorAll(".map-box").forEach(box => {
+
     box.addEventListener("dragover", e => e.preventDefault());
 
     box.addEventListener("drop", function(e) {
@@ -528,8 +529,18 @@ document.querySelectorAll(".map-box").forEach(box => {
 
         const tile = document.createElement("div");
         tile.className = "tile";
-        tile.dataset.id = Math.random().toString(36).substr(2, 9);
         tile.textContent = text;
+
+        // preserve formatting
+        if (["a","e","i","o","u"].includes(text)) {
+            tile.classList.add("vowel");
+        }
+        if (text === "e") {
+            tile.classList.add("silent-e");
+        }
+
+        tile.setAttribute("draggable", true);
+        tile.addEventListener("dragstart", dragStart);
 
         this.appendChild(tile);
     });
@@ -645,42 +656,21 @@ window.resetBoard = function() {
 
     // Clear map boxes
     document.querySelectorAll(".map-box").forEach(box => {
+        box.innerHTML = "";
+    });
 
-    box.addEventListener("dragover", e => e.preventDefault());
-
-    box.addEventListener("drop", function(e) {
-        e.preventDefault();
-
-        const tileId = e.dataTransfer.getData("tileId");
-        const draggedTile = document.querySelector(`[data-id='${tileId}']`);
-
-        if (!draggedTile) return;
-
-        // If tile came from another box → MOVE it
-        if (draggedTile.parentElement.classList.contains("map-box")) {
-            draggedTile.parentElement.innerHTML = "";
-            this.innerHTML = "";
-            this.appendChild(draggedTile);
-        }
-
-        // If tile came from bank → CLONE it
-        else {
-            this.innerHTML = "";
-
-            const clone = draggedTile.cloneNode(true);
-
-            clone.dataset.id = Math.random().toString(36).substr(2, 9);
-            clone.addEventListener("dragstart", dragStart);
-
-            this.appendChild(clone);
+    // Reset sound chips properly
+    document.querySelectorAll(".chip-slot").forEach((slot, index) => {
+        const chip = document.getElementById("chip-" + index);
+        if (chip) {
+            slot.appendChild(chip);
         }
     });
-});
 
     // Clear writing
     clearCanvas();
 };
-
+ 
 /* =========================
    TILE CONTENT (THIS WAS BREAKING)
 ========================= */
