@@ -560,23 +560,7 @@ var tile = document.createElement("div");
 tile.className = "tile";
 tile.textContent = text;
 
-// vowel colors
-if (["a","e","i","o","u"].includes(text)) {
-    tile.classList.add("vowel");
-}
-if (text === "e") {
-    tile.classList.add("silent-e");
-}
-
-// ⭐ ADD THIS (your new part)
-if (["ore","oar","oor"].includes(text)) {
-    tile.classList.add("or-pattern");
-}
-
-tile.setAttribute("draggable", true);
-tile.addEventListener("dragstart", dragStart);
-
-        // keep formatting
+      // keep formatting from original tile
 if (draggedTile) {
     if (draggedTile.classList.contains("vowel")) {
         tile.classList.add("vowel");
@@ -584,15 +568,14 @@ if (draggedTile) {
     if (draggedTile.classList.contains("silent-e")) {
         tile.classList.add("silent-e");
     }
-}
-
-        tile.setAttribute("draggable", true);
-        tile.addEventListener("dragstart", dragStart);
-
-        box.appendChild(tile);
-    });
-});    
-
+    if (draggedTile.classList.contains("or-pattern")) {
+        tile.classList.add("or-pattern");
+    }
+} 
+     
+tile.setAttribute("draggable", true);
+tile.addEventListener("dragstart", dragStart);
+     
 /* =========================
    BOARD MODE (SAFE)
 ========================= */
