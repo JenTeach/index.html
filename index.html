@@ -513,7 +513,7 @@ function createTiles(list, containerId) {
    DESKTOP DRAG SYSTEM
 ========================= */
 function dragStart(e) {
-    e.dataTransfer.setData("text", e.target.textContent);
+    e.dataTransfer.setData("tileId", e.target.dataset.id);
 }
 
 document.querySelectorAll(".map-box").forEach(box => {
@@ -528,6 +528,7 @@ document.querySelectorAll(".map-box").forEach(box => {
 
         const tile = document.createElement("div");
         tile.className = "tile";
+        tile.dataset.id = Math.random().toString(36).substr(2, 9);
         tile.textContent = text;
 
         this.appendChild(tile);
@@ -643,18 +644,38 @@ setupDropZones(".chip-slot");
 window.resetBoard = function() {
 
     // Clear map boxes
-    document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
+    document.querySelectorAll(".map-box").forEach(box => {
 
-    // Move chips back into slots in order
-    const slots = document.querySelectorAll(".chip-slot");
-    const chips = document.querySelectorAll(".sound-chip");
+    box.addEventListener("dragover", e => e.preventDefault());
 
-    chips.forEach((chip, index) => {
-        if (slots[index]) {
-            slots[index].appendChild(chip);
-            chip.classList.add("in-slot");
+    box.addEventListener("drop", function(e) {
+        e.preventDefault();
+
+        const tileId = e.dataTransfer.getData("tileId");
+        const draggedTile = document.querySelector(`[data-id='${tileId}']`);
+
+        if (!draggedTile) return;
+
+        // If tile came from another box → MOVE it
+        if (draggedTile.parentElement.classList.contains("map-box")) {
+            draggedTile.parentElement.innerHTML = "";
+            this.innerHTML = "";
+            this.appendChild(draggedTile);
+        }
+
+        // If tile came from bank → CLONE it
+        else {
+            this.innerHTML = "";
+
+            const clone = draggedTile.cloneNode(true);
+
+            clone.dataset.id = Math.random().toString(36).substr(2, 9);
+            clone.addEventListener("dragstart", dragStart);
+
+            this.appendChild(clone);
         }
     });
+});
 
     // Clear writing
     clearCanvas();
