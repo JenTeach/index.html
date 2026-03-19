@@ -537,6 +537,7 @@ document.querySelectorAll(".map-box").forEach(function(box) {
         e.preventDefault();
 
         var text = e.dataTransfer.getData("text");
+        var draggedTile = document.querySelector(".dragging");
         if (!text) return;
 
         var draggedTile = document.querySelector(".dragging");
@@ -557,12 +558,14 @@ document.querySelectorAll(".map-box").forEach(function(box) {
         tile.textContent = text;
 
         // keep formatting
-        if (["a","e","i","o","u"].includes(text)) {
-            tile.classList.add("vowel");
-        }
-        if (text === "e") {
-            tile.classList.add("silent-e");
-        }
+if (draggedTile) {
+    if (draggedTile.classList.contains("vowel")) {
+        tile.classList.add("vowel");
+    }
+    if (draggedTile.classList.contains("silent-e")) {
+        tile.classList.add("silent-e");
+    }
+}
 
         tile.setAttribute("draggable", true);
         tile.addEventListener("dragstart", dragStart);
