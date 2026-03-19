@@ -625,8 +625,11 @@ function setupDropZones(selector) {
                 originalSlot.appendChild(existingChip);
             }
 
-           this.innerHTML = "";
-           this.appendChild(draggedChip);
+this.innerHTML = "";
+this.appendChild(draggedChip);
+
+// mark chip as no longer in slot
+draggedChip.classList.remove("in-slot");
         });
     });
 }
@@ -639,19 +642,21 @@ setupDropZones(".chip-slot");
 ========================= */
 window.resetBoard = function() {
 
-    // 1. Clear map boxes
-    document.querySelectorAll(".map-box").forEach(box => {
-        box.innerHTML = "";
+    // Clear map boxes
+    document.querySelectorAll(".map-box").forEach(box => box.innerHTML = "");
+
+    // Move chips back into slots in order
+    const slots = document.querySelectorAll(".chip-slot");
+    const chips = document.querySelectorAll(".sound-chip");
+
+    chips.forEach((chip, index) => {
+        if (slots[index]) {
+            slots[index].appendChild(chip);
+            chip.classList.add("in-slot");
+        }
     });
 
-    // 2. Move ALL chips back into chip-bank (top row)
-    const bank = document.querySelector(".chip-bank");
-
-    document.querySelectorAll(".sound-chip").forEach(chip => {
-        bank.appendChild(chip);
-    });
-
-    // 3. Clear writing
+    // Clear writing
     clearCanvas();
 };
 
