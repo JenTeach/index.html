@@ -497,6 +497,9 @@ function createTiles(list, containerId) {
             tile.classList.add("vowel", "silent-e");
         } else {
             tile.textContent = text;
+         if (["ore","oar","oor"].includes(text)) {
+    tile.classList.add("or-pattern");
+}
 
             if (containerId === "letters" && ["a","e","i","o","u"].includes(text)) {
                 tile.classList.add("vowel");
