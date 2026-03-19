@@ -556,9 +556,25 @@ document.querySelectorAll(".map-box").forEach(function(box) {
         // CREATE new tile if from bank
         box.innerHTML = "";
 
-        var tile = document.createElement("div");
-        tile.className = "tile";
-        tile.textContent = text;
+var tile = document.createElement("div");
+tile.className = "tile";
+tile.textContent = text;
+
+// vowel colors
+if (["a","e","i","o","u"].includes(text)) {
+    tile.classList.add("vowel");
+}
+if (text === "e") {
+    tile.classList.add("silent-e");
+}
+
+// ⭐ ADD THIS (your new part)
+if (["ore","oar","oor"].includes(text)) {
+    tile.classList.add("or-pattern");
+}
+
+tile.setAttribute("draggable", true);
+tile.addEventListener("dragstart", dragStart);
 
         // keep formatting
 if (draggedTile) {
