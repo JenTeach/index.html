@@ -527,8 +527,6 @@ document.addEventListener("dragstart", (e) => {
     }
 });
  
-document.querySelectorAll(".map-box").forEach(box => {
-
 document.querySelectorAll(".map-box").forEach(function(box) {
 
     box.addEventListener("dragover", function(e) {
@@ -543,7 +541,7 @@ document.querySelectorAll(".map-box").forEach(function(box) {
 
         var draggedTile = document.querySelector(".dragging");
 
-        // If tile came from another box → MOVE it
+        // MOVE tile if coming from another box
         if (draggedTile && draggedTile.parentElement.classList.contains("map-box")) {
             draggedTile.parentElement.innerHTML = "";
             box.innerHTML = "";
@@ -551,14 +549,14 @@ document.querySelectorAll(".map-box").forEach(function(box) {
             return;
         }
 
-        // If tile came from bank → CREATE a new tile
+        // CREATE new tile if from bank
         box.innerHTML = "";
 
         var tile = document.createElement("div");
         tile.className = "tile";
         tile.textContent = text;
 
-        // Keep colors
+        // keep formatting
         if (["a","e","i","o","u"].includes(text)) {
             tile.classList.add("vowel");
         }
