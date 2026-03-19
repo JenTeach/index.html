@@ -705,6 +705,41 @@ draggedChip.classList.remove("in-slot");
 
 setupDropZones(".circle");
 setupDropZones(".chip-slot");
+ let selectedChip = null;
+
+document.addEventListener("click", function(e) {
+
+    if (!boardMode) return;
+
+    // Select chip
+    const chip = e.target.closest(".sound-chip");
+    if (chip) {
+        selectedChip = chip;
+        return;
+    }
+
+    // Place chip into circle
+    const circle = e.target.closest(".circle");
+    if (circle && selectedChip) {
+
+        // If circle already has a chip, send it back to its slot
+        const existing = circle.querySelector(".sound-chip");
+        if (existing) {
+            const home = document.getElementById(existing.dataset.home);
+            if (home) home.appendChild(existing);
+        }
+
+        circle.innerHTML = "";
+        circle.appendChild(selectedChip);
+    }
+
+    // Send chip back to top row if tapping a slot
+    const slot = e.target.closest(".chip-slot");
+    if (slot && selectedChip) {
+        slot.appendChild(selectedChip);
+    }
+
+});
 
 /* =========================
    RESET
