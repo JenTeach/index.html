@@ -636,13 +636,23 @@ document.addEventListener("click", function(e) {
 
         box.innerHTML = "";
 
-        const clone = selectedTile.cloneNode(true);
+        if (selectedTile.parentElement.classList.contains("map-box")) {
+    // MOVE tile
+    selectedTile.parentElement.innerHTML = "";
+    box.innerHTML = "";
+    box.appendChild(selectedTile);
+} else {
+    // COPY tile from bank
+    box.innerHTML = "";
 
-        clone.addEventListener("click", () => {
-            selectedTile = clone;
-        });
+    const clone = selectedTile.cloneNode(true);
 
-        box.appendChild(clone);
+    clone.addEventListener("click", () => {
+        selectedTile = clone;
+    });
+
+    box.appendChild(clone);
+}
     }
 });
 
