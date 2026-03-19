@@ -513,9 +513,14 @@ function createTiles(list, containerId) {
    DESKTOP DRAG SYSTEM
 ========================= */
 function dragStart(e) {
-    e.dataTransfer.setData("tileId", e.target.dataset.id);
+    e.dataTransfer.setData("text", e.target.textContent);
 }
-
+document.addEventListener("dragstart", (e) => {
+    if (e.target.classList.contains("tile")) {
+        e.target.classList.add("dragging");
+    }
+});
+ 
 document.querySelectorAll(".map-box").forEach(box => {
 
     box.addEventListener("dragover", e => e.preventDefault());
@@ -524,7 +529,20 @@ document.querySelectorAll(".map-box").forEach(box => {
         e.preventDefault();
 
         const text = e.dataTransfer.getData("text");
+        if (!text) return;
 
+        const draggedEl = document.querySelector(".dragging");
+
+        // If dragging from another map box → MOVE it
+        if (draggedEl && draggedEl.parentElement.classList.contains("map-box")) {
+            draggedEl.parentElement.innerHTML = "";
+            this.innerHTML = "";
+            this.appendChild(draggedEl);
+            draggedEl.classList.remove("dragging");
+            return;
+        }
+
+        // From bank → CREATE tile (with formatting)
         this.innerHTML = "";
 
         const tile = document.createElement("div");
@@ -532,12 +550,8 @@ document.querySelectorAll(".map-box").forEach(box => {
         tile.textContent = text;
 
         // preserve formatting
-        if (["a","e","i","o","u"].includes(text)) {
-            tile.classList.add("vowel");
-        }
-        if (text === "e") {
-            tile.classList.add("silent-e");
-        }
+        if (["a","e","i","o","u"].includes(text)) tile.classList.add("vowel");
+        if (text === "e") tile.classList.add("silent-e");
 
         tile.setAttribute("draggable", true);
         tile.addEventListener("dragstart", dragStart);
