@@ -646,6 +646,16 @@ document.addEventListener("click", function(e) {
     box.innerHTML = "";
 
     const clone = selectedTile.cloneNode(true);
+         
+    if (selectedTile.classList.contains("vowel")) {
+    clone.classList.add("vowel");
+}
+if (selectedTile.classList.contains("silent-e")) {
+    clone.classList.add("silent-e");
+}
+if (selectedTile.classList.contains("or-pattern")) {
+    clone.classList.add("or-pattern");
+}
 
     clone.addEventListener("click", () => {
         selectedTile = clone;
