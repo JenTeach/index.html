@@ -29,6 +29,28 @@ body {
     padding: 0 20px;
 }
 
+.mode-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+.mode-buttons button {
+    padding: 6px 12px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background: #ddd;
+}
+
+/* Active button */
+.mode-buttons button.active {
+    background: #2f5aa8;
+    color: white;
+}    
+
 .top-left {
     justify-self: start;
     font-size: 13px;
@@ -394,7 +416,9 @@ button {
 
     <div class="top-center">
         <h1>Word Builder</h1>
-     <button onclick="toggleMode()" id="modeBtn">Board Mode</button>
+     <div class="mode-buttons">
+        <button id="tapBtn" onclick="setTapMode()">Tap to Move</button>
+        <button id="dragBtn" onclick="setDragMode()">Drag & Drop</button>
     </div>
 
     <div class="top-right">
@@ -600,18 +624,20 @@ box.appendChild(tile);
 let boardMode = false;
 let selectedTile = null;
 
-window.toggleMode = function() {
-    boardMode = !boardMode;
+    window.setTapMode = function() {
+    boardMode = true;
+    document.body.classList.add("board-mode");
 
-    const btn = document.getElementById("modeBtn");
+    document.getElementById("tapBtn").classList.add("active");
+    document.getElementById("dragBtn").classList.remove("active");
+};
 
-    if (boardMode) {
-        document.body.classList.add("board-mode");   // 👈 THIS triggers scaling
-        btn.textContent = "Drag & Drop";
-    } else {
-        document.body.classList.remove("board-mode");
-        btn.textContent = "Tap to Move";
-    }
+window.setDragMode = function() {
+    boardMode = false;
+    document.body.classList.remove("board-mode");
+
+    document.getElementById("dragBtn").classList.add("active");
+    document.getElementById("tapBtn").classList.remove("active");
 };
 
 document.addEventListener("click", function(e) {
@@ -862,7 +888,9 @@ canvas.addEventListener("touchmove", draw);
 window.clearCanvas = function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
-
+    
+setTapMode();
+    
 }); // END DOM LOAD
 
 </script>
