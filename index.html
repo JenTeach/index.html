@@ -648,37 +648,46 @@ document.addEventListener("click", function(e) {
 
     if (box && selectedTile) {
 
-        // MOVE tile safely if from another box
-        if (selectedTile.parentElement.classList.contains("map-box")) {
-            const oldBox = selectedTile.parentElement;
+    // If moving from another box → MOVE it
+    if (selectedTile.parentElement.classList.contains("map-box")) {
+        const oldBox = selectedTile.parentElement;
 
+        // only clear destination if it already has something
+        if (box.children.length > 0) {
             box.innerHTML = "";
-            box.appendChild(selectedTile);
-
-            oldBox.innerHTML = "";
-        } else {
-            // COPY from bank
-            box.innerHTML = "";
-
-            const clone = selectedTile.cloneNode(true);
-
-            if (selectedTile.classList.contains("vowel")) {
-                clone.classList.add("vowel");
-            }
-            if (selectedTile.classList.contains("silent-e")) {
-                clone.classList.add("silent-e");
-            }
-            if (selectedTile.classList.contains("or-pattern")) {
-                clone.classList.add("or-pattern");
-            }
-
-            clone.addEventListener("click", () => {
-                selectedTile = clone;
-            });
-
-            box.appendChild(clone);
         }
+
+        box.appendChild(selectedTile);
+        oldBox.innerHTML = "";
+
+    } else {
+        // From tile bank → COPY
+
+        // only clear if needed
+        if (box.children.length > 0) {
+            box.innerHTML = "";
+        }
+
+        const clone = selectedTile.cloneNode(true);
+
+        // preserve formatting
+        if (selectedTile.classList.contains("vowel")) {
+            clone.classList.add("vowel");
+        }
+        if (selectedTile.classList.contains("silent-e")) {
+            clone.classList.add("silent-e");
+        }
+        if (selectedTile.classList.contains("or-pattern")) {
+            clone.classList.add("or-pattern");
+        }
+
+        clone.addEventListener("click", () => {
+            selectedTile = clone;
+        });
+
+        box.appendChild(clone);
     }
+}
 });
     
 /* =========================
