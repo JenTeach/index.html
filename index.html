@@ -144,9 +144,10 @@ html, body {
 .section {
     padding: 10px;
     box-sizing: border-box;
-    overflow: visible;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
+    min-height: 0;
 }
 
 /* Tile grids (6 across) */
@@ -183,6 +184,10 @@ html, body {
 
 .section h3 {
     margin-top: 0;
+}
+
+.section > div {
+    flex: 1;
 }
 
 .tile {
