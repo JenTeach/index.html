@@ -554,6 +554,9 @@ function createTiles(list, containerId) {
             tile.classList.add("vowel", "silent-e");
         } else {
             tile.textContent = text;
+            if (text === " ") {
+    tile.innerHTML = "&nbsp;";
+}
          if (["ore","oar","oor"].includes(text)) {
     tile.classList.add("or-pattern");
 }
@@ -834,7 +837,7 @@ window.resetBoard = function() {
 ========================= */
 createTiles(
 ["a","b","c","d","e","f","g","h","i","j","k","l",
- "m","n","o","p","q","r","s","t","u","v","w","x","y","z","e_silent"],
+ "m","n","o","p","q","r","s","t","u","v","w","x","y","z","e_silent"," "],
 "letters");
 
 createTiles(["sh","th","ch","ph","wh","ck"],"digraphs");
