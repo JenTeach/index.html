@@ -671,7 +671,9 @@ document.addEventListener("click", function(e) {
     if (!boardMode) return;
 
     const tile = e.target.closest(".tile");
+    const box = e.target.closest(".map-box");
 
+    // If a tile is tapped, select it
     if (tile) {
         document.querySelectorAll(".tile").forEach(t => t.classList.remove("selected"));
         selectedTile = tile;
@@ -679,33 +681,32 @@ document.addEventListener("click", function(e) {
         return;
     }
 
-    const box = e.target.closest(".map-box");
-
+    // If a box is tapped while a tile is selected
     if (box && selectedTile) {
 
-    // If moving from another box → MOVE it
-    if (selectedTile.parentElement.classList.contains("map-box")) {
-        const oldBox = selectedTile.parentElement;
+        // CASE 1: moving a tile that is already in a map box
+        if (selectedTile.parentElement.classList.contains("map-box")) {
+            const oldBox = selectedTile.parentElement;
 
-        // only clear destination if it already has something
-        if (box.children.length > 0) {
-            box.innerHTML = "";
+            // clear destination box first if it already has a tile
+            if (box !== oldBox) {
+                box.innerHTML = "";
+                box.appendChild(selectedTile);
+                oldBox.innerHTML = "";
+            }
+
+            selectedTile.classList.remove("selected");
+            selectedTile = null;
+            return;
         }
 
-        box.appendChild(selectedTile);
-        oldBox.innerHTML = "";
-
-    } else {
-        // From tile bank → COPY
-
-        // only clear if needed
-        if (box.children.length > 0) {
-            box.innerHTML = "";
-        }
+        // CASE 2: placing a fresh tile from the bank into a box
+        box.innerHTML = "";
 
         const clone = selectedTile.cloneNode(true);
 
-        // preserve formatting
+        clone.classList.remove("selected");
+
         if (selectedTile.classList.contains("vowel")) {
             clone.classList.add("vowel");
         }
@@ -716,13 +717,11 @@ document.addEventListener("click", function(e) {
             clone.classList.add("or-pattern");
         }
 
-        clone.addEventListener("click", () => {
-            selectedTile = clone;
-        });
-
         box.appendChild(clone);
+
+        selectedTile.classList.remove("selected");
+        selectedTile = null;
     }
-}
 });
     
 /* =========================
