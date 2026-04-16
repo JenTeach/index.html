@@ -1,746 +1,592 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2-Digit Addition Visualizer</title>
-  <style>
-    :root {
-      --bg1: #f8fafc;
-      --bg2: #e2e8f0;
-      --card: #ffffff;
-      --muted: #64748b;
-      --border: #dbe4ee;
-      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-      --green: #059669;
-      --green-soft: #ecfdf5;
-      --blue: #0284c7;
-      --blue-soft: #eff6ff;
-      --violet-soft: #f5f3ff;
-      --violet-border: #c4b5fd;
-      --red: #dc2626;
-      --red-soft: #fef2f2;
-      --amber: #b45309;
-      --amber-soft: #fffbeb;
-    }
+import React, { useMemo, useState } from "react";
 
-    * { box-sizing: border-box; }
+const SLOW_LAYOUT_TRANSITION = {
+  type: "spring",
+  stiffness: 90,
+  damping: 18,
+  duration: 0.7,
+};
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(to bottom, var(--bg1), var(--bg2));
-      color: #0f172a;
-    }
+const SLOW_FADE_TRANSITION = {
+  duration: 0.45,
+  ease: "easeInOut",
+};
+import { motion, AnimatePresence } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { RotateCcw } from "lucide-react";
 
-    .page {
-      min-height: 100vh;
-      padding: 12px;
-    }
+function clampToTwoDigits(value) {
+  const digits = String(value).replace(/\D/g, "").slice(0, 2);
+  if (!digits) return "";
+  const num = Number(digits);
+  return String(Math.max(0, Math.min(99, num)));
+}
 
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: grid;
-      gap: 12px;
-    }
+function getParts(n) {
+  return {
+    tens: Math.floor(n / 10),
+    ones: n % 10,
+  };
+}
 
-    .title-wrap {
-      text-align: center;
-    }
+function TenRod({ small = false }) {
+  return (
+    <motion.div
+      layout
+      transition={SLOW_LAYOUT_TRANSITION}
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.8, opacity: 0 }}
+      className={`${small ? "h-20 w-[3px]" : "h-28 w-[4px]"} bg-emerald-600 rounded-full`}
+      aria-label="ten rod"
+    />
+  );
+}
 
-    h1 {
-      margin: 0;
-      font-size: 2rem;
-    }
+function OneCube({ small = false }) {
+  return (
+    <motion.div
+      layout
+      transition={SLOW_LAYOUT_TRANSITION}
+      initial={{ scale: 0.7, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.7, opacity: 0 }}
+      className={`rounded-full border-2 border-sky-600 bg-transparent ${
+        small ? "h-3 w-3" : "h-4 w-4"
+      }`}
+      aria-label="one circle"
+    />
+  );
+}
 
-    .subtitle {
-      margin: 6px auto 0;
-      color: var(--muted);
-      max-width: 760px;
-      font-size: 0.95rem;
-    }
+function OnesGrid({ count, boxed = false }) {
+  const leftColumnCount = Math.min(count, 5);
+  const middleColumnCount = Math.min(Math.max(count - 5, 0), 5);
+  const rightColumnCount = Math.max(count - 10, 0);
 
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-      padding: 14px;
-    }
+  const boxedLeft = boxed ? Math.min(5, count) : 0;
+  const boxedMiddle = boxed ? Math.min(Math.max(count - 5, 0), 5) : 0;
 
-    .top-controls {
-      display: grid;
-      gap: 12px;
-      grid-template-columns: 120px 120px 110px 1fr;
-      align-items: end;
-    }
+  return (
+    <div className="flex items-start gap-2 min-h-16 w-fit">
+      <motion.div
+        layout
+        transition={SLOW_LAYOUT_TRANSITION}
+        className={`grid grid-cols-2 gap-x-2 rounded-xl p-2 ${
+          boxed ? "bg-red-50 ring-2 ring-red-500" : "bg-sky-50"
+        }`}
+      >
+        <div className="flex flex-col justify-start gap-1">
+          <AnimatePresence mode="popLayout">
+            {Array.from({ length: boxed ? boxedLeft : leftColumnCount }).map((_, i) => (
+              <OneCube key={`left-one-${i}`} small />
+            ))}
+          </AnimatePresence>
+        </div>
+        <div className="flex flex-col justify-start gap-1">
+          <AnimatePresence mode="popLayout">
+            {Array.from({ length: boxed ? boxedMiddle : middleColumnCount }).map((_, i) => (
+              <OneCube key={`middle-one-${i}`} small />
+            ))}
+          </AnimatePresence>
+        </div>
+      </motion.div>
 
-    .field label {
-      display: block;
-      font-size: 0.75rem;
-      margin-bottom: 4px;
-      color: var(--muted);
-      font-weight: 700;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      height: 38px;
-      border: 1px solid #cbd5e1;
-      border-radius: 12px;
-      padding: 8px 10px;
-      font-size: 1rem;
-      background: white;
-    }
-
-    button {
-      height: 38px;
-      border: 1px solid #cbd5e1;
-      background: white;
-      border-radius: 16px;
-      padding: 0 14px;
-      cursor: pointer;
-      font-weight: 700;
-      transition: 0.2s ease;
-    }
-
-    button:hover:not(:disabled) { transform: translateY(-1px); }
-    button:disabled { opacity: 0.45; cursor: not-allowed; }
-
-    .primary {
-      background: #0f172a;
-      color: white;
-      border-color: #0f172a;
-    }
-
-    .equation-box {
-      background: #f8fafc;
-      border-radius: 18px;
-      padding: 10px 14px;
-    }
-
-    .equation-label {
-      font-size: 0.75rem;
-      color: var(--muted);
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .equation-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .equation-text {
-      font-size: 1.8rem;
-      font-weight: 700;
-    }
-
-    .answer-input {
-      width: 82px !important;
-      text-align: center;
-      font-size: 1.2rem !important;
-      font-weight: 700;
-    }
-
-    .answer-input.correct {
-      background: var(--green-soft);
-      border-color: #10b981;
-      color: var(--green);
-    }
-
-    .answer-input.incorrect {
-      background: var(--red-soft);
-      border-color: #ef4444;
-      color: #b91c1c;
-    }
-
-    .feedback {
-      margin-top: 8px;
-      font-size: 0.95rem;
-      font-weight: 700;
-    }
-
-    .feedback.correct { color: var(--green); }
-    .feedback.incorrect { color: #b91c1c; }
-
-    .main-grid {
-      display: grid;
-      gap: 12px;
-      grid-template-columns: 1fr 1fr 2fr;
-      align-items: stretch;
-    }
-
-    .stack {
-      display: grid;
-      gap: 12px;
-    }
-
-    .card-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-      font-weight: 700;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 36px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: #f1f5f9;
-      font-size: 0.85rem;
-    }
-
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .mini-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .green-label { color: var(--green); }
-    .blue-label { color: var(--blue); }
-    .gray-label { color: #475569; }
-
-    .box-area {
-      min-height: 64px;
-      border-radius: 14px;
-      padding: 8px;
-      display: flex;
-      align-items: flex-end;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .green-soft { background: var(--green-soft); }
-    .blue-soft { background: var(--blue-soft); }
-    .gray-soft { background: #f8fafc; }
-
-    .tens-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: flex-end;
-    }
-
-    .ten-line {
-      width: 3px;
-      height: 80px;
-      background: var(--green);
-      border-radius: 999px;
-      display: inline-block;
-    }
-
-    .ones-wrap {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      min-height: 64px;
-    }
-
-    .ten-box {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      border-radius: 14px;
-      padding: 8px;
-      background: var(--blue-soft);
-    }
-
-    .ten-box.boxed {
-      background: var(--red-soft);
-      outline: 2px solid #ef4444;
-    }
-
-    .ones-column {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-width: 12px;
-    }
-
-    .one-circle {
-      width: 12px;
-      height: 12px;
-      border: 2px solid var(--blue);
-      border-radius: 50%;
-      background: transparent;
-    }
-
-    .bond-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .bond-center {
-      width: 56px;
-      height: 56px;
-      border-radius: 999px;
-      border: 4px solid var(--violet-border);
-      background: var(--violet-soft);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 1.15rem;
-    }
-
-    .bond-children {
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
-    }
-
-    .bond-child {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .bond-line {
-      width: 1px;
-      height: 20px;
-      background: #cbd5e1;
-    }
-
-    .bond-node {
-      width: 48px;
-      height: 48px;
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 0.95rem;
-    }
-
-    .bond-green {
-      border: 4px solid #86efac;
-      background: var(--green-soft);
-    }
-
-    .bond-blue {
-      border: 4px solid #7dd3fc;
-      background: var(--blue-soft);
-    }
-
-    .small-note {
-      font-size: 0.75rem;
-      margin-top: 8px;
-    }
-
-    .amber { color: var(--amber); }
-    .green { color: var(--green); }
-    .muted { color: var(--muted); }
-
-    .pill-note {
-      margin-top: 10px;
-      border-radius: 12px;
-      padding: 8px 10px;
-      font-size: 0.78rem;
-      font-weight: 700;
-    }
-
-    .pill-amber {
-      background: var(--amber-soft);
-      border: 1px solid #fcd34d;
-      color: var(--amber);
-    }
-
-    .pill-green {
-      background: var(--green-soft);
-      border: 1px solid #86efac;
-      color: var(--green);
-    }
-
-    .sum-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .combined-top {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    .blank-line {
-      display: inline-block;
-      width: 40px;
-      height: 16px;
-      border-bottom: 2px solid #94a3b8;
-    }
-
-    @media (max-width: 1100px) {
-      .main-grid { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 760px) {
-      .top-controls { grid-template-columns: 1fr 1fr; }
-      .two-col { grid-template-columns: 1fr; }
-      .equation-text { font-size: 1.4rem; }
-    }
-  </style>
-</head>
-<body>
-  <div class="page">
-    <div class="container">
-      <div class="title-wrap">
-        <h1>2-Digit Addition Visualizer</h1>
-        <div class="subtitle">Explore 2-digit + 2-digit addition with base-10 models, number bonds, and regrouping.</div>
-      </div>
-
-      <div class="card">
-        <div class="top-controls">
-          <div class="field">
-            <label for="first">First</label>
-            <input id="first" type="text" inputmode="numeric" value="27" />
+      {rightColumnCount > 0 && (
+        <motion.div
+          layout
+          transition={SLOW_LAYOUT_TRANSITION}
+          className="rounded-xl bg-sky-50 p-2"
+        >
+          <div className="flex flex-col justify-start gap-1">
+            <AnimatePresence mode="popLayout">
+              {Array.from({ length: rightColumnCount }).map((_, i) => (
+                <OneCube key={`right-one-${i}`} small />
+              ))}
+            </AnimatePresence>
           </div>
-          <div class="field">
-            <label for="second">Second</label>
-            <input id="second" type="text" inputmode="numeric" value="35" />
-          </div>
-          <button id="resetBtn">Reset</button>
-          <div class="equation-box">
-            <div class="equation-label">Equation</div>
-            <div class="equation-row">
-              <div class="equation-text"><span id="eqA">27</span> + <span id="eqB">35</span> =</div>
-              <input id="answerInput" class="answer-input" type="text" inputmode="numeric" placeholder="?" />
-              <button id="submitBtn" class="primary">Submit</button>
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
+function BlockCollection({ tens, ones }) {
+  const value = tens * 10 + ones;
+  return (
+    <Card className="rounded-2xl shadow-md h-full">
+      <CardContent className="pb-4 pt-4">
+        <div className="flex flex-col items-center gap-3">
+          <motion.div
+            layout
+            transition={SLOW_LAYOUT_TRANSITION}
+            className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-violet-300 bg-violet-50 text-xl font-bold"
+          >
+            {value}
+          </motion.div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 mt-3">
+          <div>
+            <p className="mb-1 text-xs font-medium text-emerald-700">Tens</p>
+            <div className="flex flex-wrap items-end gap-1.5 rounded-xl bg-emerald-50 p-2 min-h-16">
+              <AnimatePresence mode="popLayout">
+                {Array.from({ length: tens }).map((_, i) => (
+                  <TenRod key={`ten-${i}`} small />
+                ))}
+              </AnimatePresence>
             </div>
-            <div id="feedback" class="feedback"></div>
+          </div>
+
+          <div>
+            <p className="mb-1 text-xs font-medium text-sky-700">Ones</p>
+            <OnesGrid count={ones} />
           </div>
         </div>
-      </div>
+      </CardContent>
+    </Card>
+  );
+}
 
-      <div class="main-grid">
-        <div class="stack">
-          <div class="card" id="addend1Blocks"></div>
-          <div class="card" id="addend1Bond"></div>
+function NumberBond({ value }) {
+  const { tens, ones } = getParts(value);
+
+  return (
+    <Card className="rounded-2xl shadow-md h-full">
+      <CardContent className="pb-4 pt-4">
+        <div className="flex flex-col items-center gap-3">
+          <motion.div
+            layout
+            transition={SLOW_LAYOUT_TRANSITION}
+            className="flex h-14 w-14 items-center justify-center rounded-full border-4 border-violet-300 bg-violet-50 text-lg font-bold"
+          >
+            {value}
+          </motion.div>
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col items-center gap-1">
+              <div className="h-5 w-px bg-slate-300" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-emerald-300 bg-emerald-50 text-sm font-semibold">
+                {tens * 10}
+              </div>
+              <span className="text-xs text-slate-600">Tens</span>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <div className="h-5 w-px bg-slate-300" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-sky-300 bg-sky-50 text-sm font-semibold">
+                {ones}
+              </div>
+              <span className="text-xs text-slate-600">Ones</span>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function CombinedBond({ a, b, regroupStep }) {
+  const p1 = getParts(a);
+  const p2 = getParts(b);
+
+  const onesBefore = p1.ones + p2.ones;
+  const tensBefore = p1.tens + p2.tens;
+  const canRegroup = onesBefore >= 10;
+  const isRegrouped = regroupStep === "regrouped";
+  const isBoxed = regroupStep === "boxed";
+
+  const onesAfter = isRegrouped && canRegroup ? onesBefore - 10 : onesBefore;
+  const tensAfter = isRegrouped && canRegroup ? tensBefore + 1 : tensBefore;
+  const regroupTenValue = isRegrouped && canRegroup ? 10 : 0;
+
+  return (
+    <Card className="rounded-2xl shadow-md h-full">
+      <CardHeader className="pb-2 pt-4">
+        <CardTitle className="text-base">Combined Bond</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3 pb-4">
+        <div className="flex items-center justify-center gap-2 text-sm font-semibold">
+          <span>{tensAfter * 10}</span>
+          <span>+</span>
+          <span>{onesAfter}</span>
+          <span>=</span>
+          <span className="inline-block h-5 w-10 border-b-2 border-slate-400" />
         </div>
 
-        <div class="stack">
-          <div class="card" id="addend2Blocks"></div>
-          <div class="card" id="addend2Bond"></div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-xl bg-slate-50 p-3">
+            <p className="mb-2 text-xs font-medium text-slate-600">Tens</p>
+            <div className="flex items-center gap-1 text-sm font-semibold flex-wrap">
+              <span>{p1.tens * 10}</span>
+              <span>+</span>
+              <span>{p2.tens * 10}</span>
+              {isRegrouped && canRegroup && (
+                <>
+                  <span className="text-emerald-700">+</span>
+                  <span className="text-emerald-700">{regroupTenValue}</span>
+                </>
+              )}
+              <span>=</span>
+              <span>{tensAfter * 10}</span>
+            </div>
+            {isRegrouped && canRegroup && (
+              <p className="mt-2 text-xs text-emerald-700">from regrouping.</p>
+            )}
+          </div>
+
+          <div className="rounded-xl bg-slate-50 p-3">
+            <p className="mb-2 text-xs font-medium text-slate-600">Ones</p>
+            <div className="flex items-center gap-1 text-sm font-semibold flex-wrap">
+              <span>{p1.ones}</span>
+              <span>+</span>
+              <span>{p2.ones}</span>
+              <span>=</span>
+              <span>{onesBefore}</span>
+              {isRegrouped && canRegroup && (
+                <>
+                  <span className="text-emerald-700">-</span>
+                  <span className="text-emerald-700">10</span>
+                  <span>=</span>
+                  <span>{onesAfter}</span>
+                </>
+              )}
+            </div>
+            {!canRegroup && <p className="mt-2 text-xs text-slate-500">No regrouping needed.</p>}
+            {canRegroup && regroupStep === "none" && (
+              <p className="mt-2 text-xs text-amber-700">{onesBefore} ones can trade for 1 ten.</p>
+            )}
+            {canRegroup && isBoxed && (
+              <p className="mt-2 text-xs text-amber-700">10 ones are boxed and ready to regroup.</p>
+            )}
+            {canRegroup && isRegrouped && (
+              <p className="mt-2 text-xs text-emerald-700">10 ones became 1 ten.</p>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SumBlocks({ a, b, regroupStep, setRegroupStep }) {
+  const p1 = getParts(a);
+  const p2 = getParts(b);
+
+  const totalTens = p1.tens + p2.tens;
+  const totalOnes = p1.ones + p2.ones;
+  const canRegroup = totalOnes >= 10;
+  const isBoxed = regroupStep === "boxed";
+  const isRegrouped = regroupStep === "regrouped";
+
+  const shownTens = isRegrouped && canRegroup ? totalTens + 1 : totalTens;
+  const shownOnes = isRegrouped && canRegroup ? totalOnes - 10 : totalOnes;
+
+  return (
+    <Card className="rounded-2xl shadow-md h-full">
+      <CardHeader className="pb-2 pt-4">
+        <CardTitle className="flex items-center justify-between text-base">
+          <span>Sum Blocks</span>
+          <Badge>{a + b}</Badge>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pb-4">
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <p className="mb-1 text-xs font-medium text-emerald-700">Tens</p>
+            <div className="flex flex-wrap items-end gap-1.5 bg-emerald-50 p-2 min-h-16 rounded-xl">
+              <AnimatePresence mode="popLayout">
+                {Array.from({ length: shownTens }).map((_, i) => (
+                  <TenRod key={`sum-ten-${i}`} small />
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-1 text-xs font-medium text-sky-700">Ones</p>
+            <div className="flex items-start gap-3">
+              <OnesGrid count={shownOnes} boxed={isBoxed && canRegroup} />
+              {canRegroup && (
+                <div className="flex flex-col gap-2">
+                  <Button
+                    onClick={() => setRegroupStep("boxed")}
+                    disabled={regroupStep !== "none"}
+                    className="rounded-2xl h-8"
+                  >
+                    Make a Ten
+                  </Button>
+                  <Button
+                    onClick={() => setRegroupStep("regrouped")}
+                    disabled={regroupStep !== "boxed"}
+                    className="rounded-2xl h-8"
+                  >
+                    Regroup
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setRegroupStep("none")}
+                    disabled={regroupStep === "none"}
+                    className="rounded-2xl h-8"
+                  >
+                    Undo
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        <div class="stack">
-          <div class="card" id="sumBlocks"></div>
-          <div class="card" id="combinedBond"></div>
+        <AnimatePresence mode="wait">
+          {canRegroup && regroupStep === "none" && (
+            <motion.div
+              key="regroup-hint"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={SLOW_FADE_TRANSITION}
+              className="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800"
+            >
+              Press Make a Ten to draw a box around 10 ones.
+            </motion.div>
+          )}
+
+          {canRegroup && regroupStep === "boxed" && (
+            <motion.div
+              key="regroup-boxed"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={SLOW_FADE_TRANSITION}
+              className="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800"
+            >
+              The red box shows 10 ones. Press Regroup to turn them into 1 ten.
+            </motion.div>
+          )}
+
+          {canRegroup && regroupStep === "regrouped" && (
+            <motion.div
+              key="regroup-done"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={SLOW_FADE_TRANSITION}
+              className="mt-2 rounded-xl border border-emerald-200 bg-emerald-50 p-2 text-xs text-emerald-800"
+            >
+              Regrouping complete.
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function TwoDigitAdditionVisualizer() {
+  const [first, setFirst] = useState("");
+  const [second, setSecond] = useState("");
+  const [regroupStep, setRegroupStep] = useState("none");
+  const [studentAnswer, setStudentAnswer] = useState("");
+  const [answerState, setAnswerState] = useState("idle");
+  const [activeInput, setActiveInput] = useState("first");
+
+  const a = Number(first || 0);
+  const b = Number(second || 0);
+
+  const partsA = useMemo(() => getParts(a), [a]);
+  const partsB = useMemo(() => getParts(b), [b]);
+
+  const handleAnswerChange = (e) => {
+    const digits = String(e.target.value).replace(/[^0-9]/g, "").slice(0, 3);
+    setStudentAnswer(digits);
+    setAnswerState("idle");
+  };
+
+  const checkAnswer = () => {
+    if (studentAnswer === "") {
+      setAnswerState("incorrect");
+      return;
+    }
+
+    setAnswerState(Number(studentAnswer) === a + b ? "correct" : "incorrect");
+  };
+  
+  const handleFirstChange = (e) => {
+    setFirst(clampToTwoDigits(e.target.value));
+    setRegroupStep("none");
+    setStudentAnswer("");
+    setAnswerState("idle");
+  };
+
+  const handleSecondChange = (e) => {
+    setSecond(clampToTwoDigits(e.target.value));
+    setRegroupStep("none");
+    setStudentAnswer("");
+    setAnswerState("idle");
+  };
+
+  const resetProblemState = () => {
+    setRegroupStep("none");
+    setStudentAnswer("");
+    setAnswerState("idle");
+  };
+
+  const handleNumberPad = (digit) => {
+    if (activeInput === "first") {
+      setFirst((prev) => {
+        const next = String(prev) + String(digit);
+        const digits = next.replace(/[^0-9]/g, "").slice(0, 2);
+        return digits === "" ? "" : String(Math.min(99, Number(digits)));
+      });
+    } else {
+      setSecond((prev) => {
+        const next = String(prev) + String(digit);
+        const digits = next.replace(/[^0-9]/g, "").slice(0, 2);
+        return digits === "" ? "" : String(Math.min(99, Number(digits)));
+      });
+    }
+    resetProblemState();
+  };
+
+  const handleBackspace = () => {
+    if (activeInput === "first") {
+      setFirst((prev) => prev.slice(0, -1));
+    } else {
+      setSecond((prev) => prev.slice(0, -1));
+    }
+    resetProblemState();
+  };
+
+  return (
+    <div className="h-screen overflow-hidden bg-gradient-to-b from-slate-50 to-slate-100 p-3 md:p-4">
+      <div className="mx-auto grid h-full max-w-7xl grid-rows-[auto_auto_1fr] gap-3">
+        <div className="space-y-1 text-center">
+          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">2-Digit Addition Visualizer</h1>
+          <p className="mx-auto max-w-3xl text-sm text-slate-600">
+            Explore 2-digit + 2-digit addition with base-10 blocks, number bonds, and regrouping.
+          </p>
+        </div>
+
+        <Card className="rounded-2xl shadow-lg">
+          <CardContent className="p-4 space-y-3">
+            <div className="flex items-center justify-end">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setFirst("");
+                  setSecond("");
+                  setRegroupStep("none");
+                  setStudentAnswer("");
+                  setAnswerState("idle");
+                  setActiveInput("first");
+                }}
+                className="rounded-2xl h-9"
+              >
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Reset
+              </Button>
+            </div>
+
+            <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+              {Array.from({ length: 10 }).map((_, n) => (
+                <Button
+                  key={n}
+                  type="button"
+                  variant="outline"
+                  className="rounded-2xl h-9 min-w-10 px-3"
+                  onClick={() => handleNumberPad(String(n))}
+                >
+                  {n}
+                </Button>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-2xl h-9 px-3"
+                onClick={handleBackspace}
+              >
+                Delete
+              </Button>
+            </div>
+
+            <div className="grid gap-3 lg:grid-cols-4 lg:items-end">
+              <div className="flex justify-center">
+                <div className="space-y-1 w-28">
+                  <Label htmlFor="first" className="text-xs text-center block">Addend 1</Label>
+                  <Input
+                    id="first"
+                    inputMode="numeric"
+                    value={first}
+                    onFocus={() => setActiveInput("first")}
+                    onChange={handleFirstChange}
+                    placeholder=""
+                    className={`h-9 text-base text-center ${activeInput === "first" ? "ring-2 ring-sky-300" : ""}`}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-center">
+                <div className="space-y-1 w-28">
+                  <Label htmlFor="second" className="text-xs text-center block">Addend 2</Label>
+                  <Input
+                    id="second"
+                    inputMode="numeric"
+                    value={second}
+                    onFocus={() => setActiveInput("second")}
+                    onChange={handleSecondChange}
+                    placeholder=""
+                    className={`h-9 text-base text-center ${activeInput === "second" ? "ring-2 ring-sky-300" : ""}`}
+                  />
+                </div>
+              </div>
+              <div className="lg:col-span-2 rounded-2xl bg-slate-50 px-4 py-2 text-center lg:text-left">
+                <p className="text-xs font-medium text-slate-500">Equation</p>
+                <div className="flex flex-wrap items-center justify-center gap-2 lg:justify-start">
+                  <p className="text-2xl font-bold">{first || ""} {first !== "" ? "+" : ""} {second || ""} {second !== "" ? "=" : ""}</p>
+                  <Input
+                    inputMode="numeric"
+                    value={studentAnswer}
+                    onChange={handleAnswerChange}
+                    placeholder="?"
+                    className={`h-10 w-20 text-center text-xl font-bold ${
+                      answerState === "correct"
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                        : answerState === "incorrect"
+                          ? "border-red-500 bg-red-50 text-red-700"
+                          : ""
+                    }`}
+                  />
+                  <Button onClick={checkAnswer} className="rounded-2xl h-9">
+                    Submit
+                  </Button>
+                </div>
+                {answerState === "correct" && (
+                  <p className="mt-2 text-sm font-medium text-emerald-700">Correct!</p>
+                )}
+                {answerState === "incorrect" && (
+                  <p className="mt-2 text-sm font-medium text-red-700">Try again!</p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid min-h-0 gap-3 lg:grid-cols-4">
+          <div className="grid min-h-0 gap-3 grid-rows-2">
+            <BlockCollection tens={partsA.tens} ones={partsA.ones} />
+            <NumberBond value={a} />
+          </div>
+          <div className="grid min-h-0 gap-3 grid-rows-2">
+            <BlockCollection tens={partsB.tens} ones={partsB.ones} />
+            <NumberBond value={b} />
+          </div>
+          <div className="lg:col-span-2 grid min-h-0 gap-3 grid-rows-2">
+            <SumBlocks a={a} b={b} regroupStep={regroupStep} setRegroupStep={setRegroupStep} />
+            <CombinedBond a={a} b={b} regroupStep={regroupStep} />
+          </div>
         </div>
       </div>
     </div>
-  </div>
-
-  <script>
-    const state = {
-      first: 27,
-      second: 35,
-      regroupStep: 'none',
-      studentAnswer: '',
-      answerState: 'idle'
-    };
-
-    const firstInput = document.getElementById('first');
-    const secondInput = document.getElementById('second');
-    const answerInput = document.getElementById('answerInput');
-    const submitBtn = document.getElementById('submitBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const feedback = document.getElementById('feedback');
-    const eqA = document.getElementById('eqA');
-    const eqB = document.getElementById('eqB');
-
-    function clampToTwoDigits(value) {
-      const digits = String(value).replace(/\D/g, '').slice(0, 2);
-      if (!digits) return '';
-      const num = Number(digits);
-      return String(Math.max(0, Math.min(99, num)));
-    }
-
-    function digitsOnly(value, max = 3) {
-      return String(value).replace(/\D/g, '').slice(0, max);
-    }
-
-    function getParts(n) {
-      return {
-        tens: Math.floor(n / 10),
-        ones: n % 10,
-      };
-    }
-
-    function createTenLines(count) {
-      let html = '<div class="tens-wrap">';
-      for (let i = 0; i < count; i++) html += '<span class="ten-line"></span>';
-      html += '</div>';
-      return html;
-    }
-
-    function createOnesGrid(count, boxed = false) {
-      const left = Math.min(count, 5);
-      const middle = Math.min(Math.max(count - 5, 0), 5);
-      const right = Math.max(count - 10, 0);
-
-      const boxedLeft = boxed ? Math.min(5, count) : left;
-      const boxedMiddle = boxed ? Math.min(Math.max(count - 5, 0), 5) : middle;
-
-      function makeColumn(num) {
-        let html = '<div class="ones-column">';
-        for (let i = 0; i < num; i++) html += '<span class="one-circle"></span>';
-        html += '</div>';
-        return html;
-      }
-
-      let html = '<div class="ones-wrap">';
-      html += `<div class="ten-box ${boxed ? 'boxed' : ''}">`;
-      html += makeColumn(boxedLeft);
-      html += makeColumn(boxedMiddle);
-      html += '</div>';
-
-      if (right > 0) {
-        html += '<div class="ten-box">';
-        html += makeColumn(right);
-        html += '</div>';
-      }
-
-      html += '</div>';
-      return html;
-    }
-
-    function blockCollectionHTML(value, title) {
-      const parts = getParts(value);
-      return `
-        <div class="card-title-row">
-          <span>${title}</span>
-          <span class="badge">${value}</span>
-        </div>
-        <div class="two-col">
-          <div>
-            <div class="mini-label green-label">Tens</div>
-            <div class="box-area green-soft">${createTenLines(parts.tens)}</div>
-          </div>
-          <div>
-            <div class="mini-label blue-label">Ones</div>
-            ${createOnesGrid(parts.ones, false)}
-          </div>
-        </div>
-      `;
-    }
-
-    function numberBondHTML(value, label) {
-      const parts = getParts(value);
-      return `
-        <div class="card-title-row"><span>${label} Bond</span></div>
-        <div class="bond-wrap">
-          <div class="bond-center">${value}</div>
-          <div class="bond-children">
-            <div class="bond-child">
-              <div class="bond-line"></div>
-              <div class="bond-node bond-green">${parts.tens * 10}</div>
-              <div class="mini-label muted">Tens</div>
-            </div>
-            <div class="bond-child">
-              <div class="bond-line"></div>
-              <div class="bond-node bond-blue">${parts.ones}</div>
-              <div class="mini-label muted">Ones</div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function sumBlocksHTML(a, b, regroupStep) {
-      const p1 = getParts(a);
-      const p2 = getParts(b);
-      const totalTens = p1.tens + p2.tens;
-      const totalOnes = p1.ones + p2.ones;
-      const canRegroup = totalOnes >= 10;
-      const isBoxed = regroupStep === 'boxed';
-      const isRegrouped = regroupStep === 'regrouped';
-      const shownTens = isRegrouped && canRegroup ? totalTens + 1 : totalTens;
-      const shownOnes = isRegrouped && canRegroup ? totalOnes - 10 : totalOnes;
-
-      let note = '';
-      if (canRegroup && regroupStep === 'none') {
-        note = '<div class="pill-note pill-amber">Press Make a Ten to draw a box around 10 ones.</div>';
-      } else if (canRegroup && regroupStep === 'boxed') {
-        note = '<div class="pill-note pill-amber">The red box shows 10 ones. Press Regroup to turn them into 1 ten.</div>';
-      } else if (canRegroup && regroupStep === 'regrouped') {
-        note = '<div class="pill-note pill-green">Regrouping complete.</div>';
-      }
-
-      let buttons = '';
-      if (canRegroup) {
-        buttons = `
-          <div class="sum-buttons">
-            <button id="makeTenBtn" class="primary" ${regroupStep !== 'none' ? 'disabled' : ''}>Make a Ten</button>
-            <button id="regroupBtn" class="primary" ${regroupStep !== 'boxed' ? 'disabled' : ''}>Regroup</button>
-            <button id="undoBtn" ${regroupStep === 'none' ? 'disabled' : ''}>Undo</button>
-          </div>
-        `;
-      }
-
-      return `
-        <div class="card-title-row">
-          <span>Sum Blocks</span>
-          <span class="badge">${a + b}</span>
-        </div>
-        <div class="two-col">
-          <div>
-            <div class="mini-label green-label">Tens</div>
-            <div class="box-area green-soft">${createTenLines(shownTens)}</div>
-          </div>
-          <div>
-            <div class="mini-label blue-label">Ones</div>
-            ${createOnesGrid(shownOnes, isBoxed && canRegroup)}
-          </div>
-        </div>
-        ${buttons}
-        ${note}
-      `;
-    }
-
-    function combinedBondHTML(a, b, regroupStep) {
-      const p1 = getParts(a);
-      const p2 = getParts(b);
-      const onesBefore = p1.ones + p2.ones;
-      const tensBefore = p1.tens + p2.tens;
-      const canRegroup = onesBefore >= 10;
-      const isRegrouped = regroupStep === 'regrouped';
-      const isBoxed = regroupStep === 'boxed';
-      const onesAfter = isRegrouped && canRegroup ? onesBefore - 10 : onesBefore;
-      const tensAfter = isRegrouped && canRegroup ? tensBefore + 1 : tensBefore;
-
-      let onesNote = '<div class="small-note muted">No regrouping needed.</div>';
-      if (canRegroup && regroupStep === 'none') {
-        onesNote = `<div class="small-note amber">${onesBefore} ones can trade for 1 ten.</div>`;
-      } else if (canRegroup && isBoxed) {
-        onesNote = '<div class="small-note amber">10 ones are boxed and ready to regroup.</div>';
-      } else if (canRegroup && isRegrouped) {
-        onesNote = '<div class="small-note green">10 ones became 1 ten.</div>';
-      }
-
-      return `
-        <div class="card-title-row"><span>Combined Bond</span></div>
-        <div class="combined-top">
-          <span>${tensAfter * 10}</span>
-          <span>+</span>
-          <span>${onesAfter}</span>
-          <span>=</span>
-          <span class="blank-line"></span>
-        </div>
-        <div class="two-col">
-          <div class="card gray-soft">
-            <div class="mini-label gray-label">Tens</div>
-            <div><strong>${p1.tens * 10}</strong> + <strong>${p2.tens * 10}</strong> = <strong>${tensAfter * 10}</strong></div>
-            ${isRegrouped && canRegroup ? '<div class="small-note green">+10 from regrouping.</div>' : ''}
-          </div>
-          <div class="card gray-soft">
-            <div class="mini-label gray-label">Ones</div>
-            <div><strong>${p1.ones}</strong> + <strong>${p2.ones}</strong> = <strong>${onesAfter}</strong></div>
-            ${onesNote}
-          </div>
-        </div>
-      `;
-    }
-
-    function render() {
-      const a = Number(state.first || 0);
-      const b = Number(state.second || 0);
-
-      eqA.textContent = a;
-      eqB.textContent = b;
-
-      firstInput.value = state.first === 0 ? '0' : String(state.first || '');
-      secondInput.value = state.second === 0 ? '0' : String(state.second || '');
-      answerInput.value = state.studentAnswer;
-      answerInput.className = 'answer-input';
-      if (state.answerState === 'correct') answerInput.classList.add('correct');
-      if (state.answerState === 'incorrect') answerInput.classList.add('incorrect');
-
-      feedback.textContent = state.answerState === 'correct' ? 'Correct!' : state.answerState === 'incorrect' ? 'Try again!' : '';
-      feedback.className = 'feedback ' + (state.answerState === 'idle' ? '' : state.answerState);
-
-      document.getElementById('addend1Blocks').innerHTML = blockCollectionHTML(a, `Addend 1: ${a}`);
-      document.getElementById('addend2Blocks').innerHTML = blockCollectionHTML(b, `Addend 2: ${b}`);
-      document.getElementById('addend1Bond').innerHTML = numberBondHTML(a, 'Addend 1');
-      document.getElementById('addend2Bond').innerHTML = numberBondHTML(b, 'Addend 2');
-      document.getElementById('sumBlocks').innerHTML = sumBlocksHTML(a, b, state.regroupStep);
-      document.getElementById('combinedBond').innerHTML = combinedBondHTML(a, b, state.regroupStep);
-
-      const makeTenBtn = document.getElementById('makeTenBtn');
-      const regroupBtn = document.getElementById('regroupBtn');
-      const undoBtn = document.getElementById('undoBtn');
-
-      if (makeTenBtn) makeTenBtn.onclick = () => { state.regroupStep = 'boxed'; render(); };
-      if (regroupBtn) regroupBtn.onclick = () => { state.regroupStep = 'regrouped'; render(); };
-      if (undoBtn) undoBtn.onclick = () => { state.regroupStep = 'none'; render(); };
-    }
-
-    firstInput.addEventListener('input', (e) => {
-      state.first = clampToTwoDigits(e.target.value);
-      state.regroupStep = 'none';
-      state.studentAnswer = '';
-      state.answerState = 'idle';
-      render();
-    });
-
-    secondInput.addEventListener('input', (e) => {
-      state.second = clampToTwoDigits(e.target.value);
-      state.regroupStep = 'none';
-      state.studentAnswer = '';
-      state.answerState = 'idle';
-      render();
-    });
-
-    answerInput.addEventListener('input', (e) => {
-      state.studentAnswer = digitsOnly(e.target.value, 3);
-      state.answerState = 'idle';
-      render();
-    });
-
-    submitBtn.addEventListener('click', () => {
-      const a = Number(state.first || 0);
-      const b = Number(state.second || 0);
-      if (state.studentAnswer === '') {
-        state.answerState = 'incorrect';
-      } else {
-        state.answerState = Number(state.studentAnswer) === a + b ? 'correct' : 'incorrect';
-      }
-      render();
-    });
-
-    resetBtn.addEventListener('click', () => {
-      state.first = 27;
-      state.second = 35;
-      state.regroupStep = 'none';
-      state.studentAnswer = '';
-      state.answerState = 'idle';
-      render();
-    });
-
-    render();
-  </script>
-</body>
-</html>
+  );
+}
